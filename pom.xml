@@ -83,6 +83,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<imageName>seppaleinen/worldofmovies-importer</imageName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
