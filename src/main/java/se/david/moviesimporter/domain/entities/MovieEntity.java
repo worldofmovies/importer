@@ -1,32 +1,45 @@
-package se.david.moviesimporter.domain;
+package se.david.moviesimporter.domain.entities;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
-/*
-{"adult":false,"id":1293830,"name":"Santiago  Bertolino","popularity":0.6}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * {"adult":false,"id":3924,"original_title":"Blondie","popularity":2.405,"video":false}
  */
-@Entity
-public class Person {
+@Entity(name = "Movie")
+@Table(name = "movie")
+public class MovieEntity {
 	@Id
 	private long id;
 	@Transient
 	private boolean adult;
-	private String name;
+	@JsonProperty("original_title")
+	@Column(length = 512)
+	private String originalTitle;
 	private double popularity;
+	private boolean video;
 	private boolean processed;
+	private String backdrop_path;
+	@JsonProperty("")
+	private long collectionId;
 
-	public Person() {
+
+	public MovieEntity() {
 	}
 
-	public Person(long id, boolean adult, String name, double popularity, boolean processed) {
+	public MovieEntity(long id, boolean adult, String originalTitle, double popularity, boolean video, boolean processed) {
 		this.id = id;
 		this.adult = adult;
-		this.name = name;
+		this.originalTitle = originalTitle;
 		this.popularity = popularity;
+		this.video = video;
 		this.processed = processed;
 	}
 
@@ -46,12 +59,12 @@ public class Person {
 		this.adult = adult;
 	}
 
-	public String getName() {
-		return name;
+	public String getOriginalTitle() {
+		return originalTitle;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setOriginalTitle(String originalTitle) {
+		this.originalTitle = originalTitle;
 	}
 
 	public double getPopularity() {
@@ -60,6 +73,14 @@ public class Person {
 
 	public void setPopularity(double popularity) {
 		this.popularity = popularity;
+	}
+
+	public boolean isVideo() {
+		return video;
+	}
+
+	public void setVideo(boolean video) {
+		this.video = video;
 	}
 
 	public boolean isProcessed() {
@@ -78,8 +99,8 @@ public class Person {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Person person = (Person) o;
-		return id == person.id;
+		MovieEntity movieEntity = (MovieEntity) o;
+		return id == movieEntity.id;
 	}
 
 	@Override
@@ -89,12 +110,12 @@ public class Person {
 
 	@Override
 	public String toString() {
-		return "Person{" +
+		return "Movie{" +
 				"id=" + id +
 				", adult=" + adult +
-				", name='" + name + '\'' +
+				", originalTitle='" + originalTitle + '\'' +
 				", popularity=" + popularity +
-				", processed=" + processed +
+				", video=" + video +
 				'}';
 	}
 }

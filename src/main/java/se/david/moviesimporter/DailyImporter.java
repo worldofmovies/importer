@@ -17,10 +17,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
-import se.david.moviesimporter.domain.Keyword;
-import se.david.moviesimporter.domain.Movie;
-import se.david.moviesimporter.domain.Person;
-import se.david.moviesimporter.domain.ProductionCompany;
+import se.david.moviesimporter.domain.entities.KeywordEntity;
+import se.david.moviesimporter.domain.entities.MovieEntity;
+import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
+import se.david.moviesimporter.domain.tmdb.Movie;
+import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.Person;
+import se.david.moviesimporter.domain.tmdb.ProductionCompany;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
@@ -73,9 +77,10 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.map(a -> {
-					List<ProductionCompany> found = productionCompanyRepository.findAllById(a.stream().map(ProductionCompany::getId).collect(Collectors.toList()));
+					List<ProductionCompanyEntity> found = productionCompanyRepository.findAllById(a.stream().map(ProductionCompany::getId).collect(Collectors.toList()));
 					return a.stream()
-							.filter(b -> !found.contains(b))
+							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(ProductionCompany::createEntity)
 							.collect(Collectors.toList());
 				})
 				.flatMap(productionCompanies -> Flux.fromIterable(productionCompanyRepository.saveAllWithTransaction(productionCompanies)))
@@ -101,9 +106,10 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.map(a -> {
-					List<Keyword> found = keywordRepository.findAllById(a.stream().map(Keyword::getId).collect(Collectors.toList()));
+					List<KeywordEntity> found = keywordRepository.findAllById(a.stream().map(Keyword::getId).collect(Collectors.toList()));
 					return a.stream()
-							.filter(b -> !found.contains(b))
+							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(Keyword::createEntity)
 							.collect(Collectors.toList());
 				})
 				.flatMap(keywords -> Flux.fromIterable(keywordRepository.saveAllWithTransaction(keywords)))
@@ -127,12 +133,13 @@ public class DailyImporter {
 				.onBackpressureBuffer()
 				.map(JsonMapper.mapPerson())
 				.filter(Objects::nonNull)
-				.filter(person -> !person.isAdult())
+				.filter(person -> !person.getAdult())
 				.buffer(buffer)
 				.map(a -> {
-					List<Person> found = personRepository.findAllById(a.stream().map(Person::getId).collect(Collectors.toList()));
+					List<PersonEntity> found = personRepository.findAllById(a.stream().map(Person::getId).collect(Collectors.toList()));
 					return a.stream()
-							.filter(b -> !found.contains(b))
+							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(Person::createEntity)
 							.collect(Collectors.toList());
 				})
 				.flatMap(persons -> Flux.fromIterable(personRepository.saveAllWithTransaction(persons)))
@@ -159,9 +166,10 @@ public class DailyImporter {
 				.filter(movie -> !movie.isAdult())
 				.buffer(buffer)
 				.map(a -> {
-					List<Movie> found = movieRepository.findAllById(a.stream().map(Movie::getId).collect(Collectors.toList()));
+					List<MovieEntity> found = movieRepository.findAllById(a.stream().map(Movie::getId).collect(Collectors.toList()));
 					return a.stream()
-							.filter(b -> !found.contains(b))
+							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(Movie::createEntity)
 							.collect(Collectors.toList());
 				})
 				.flatMap(movies -> Flux.fromIterable(movieRepository.saveAllWithTransaction(movies)), 5)

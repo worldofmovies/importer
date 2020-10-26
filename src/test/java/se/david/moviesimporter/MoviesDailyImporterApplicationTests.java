@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 
-import se.david.moviesimporter.domain.Keyword;
-import se.david.moviesimporter.domain.Movie;
-import se.david.moviesimporter.domain.Person;
+import se.david.moviesimporter.domain.entities.KeywordEntity;
+import se.david.moviesimporter.domain.entities.MovieEntity;
+import se.david.moviesimporter.domain.entities.PersonEntity;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
@@ -51,148 +51,154 @@ class MoviesDailyImporterApplicationTests {
 		movieRepository.deleteAll();
 	}
 
-	@Test
-	void importProductionCompanies() throws IOException {
-		ClassPathResource resource = new ClassPathResource("production_companies.json.gz");
+	@Nested
+	public class IdImports {
+		@Test
+		void importProductionCompanies() throws IOException {
+			ClassPathResource resource = new ClassPathResource("production_companies.json.gz");
 
-		String url = "/p/exports/production_company_ids_.*.json.gz";
-		stubEndpoint(resource, url);
+			String url = "/p/exports/production_company_ids_.*.json.gz";
+			stubEndpoint(resource, url);
 
-		webClient.get().uri("/import/daily/production-companies")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+			webClient.get().uri("/import/production-company/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
 
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
+
+		@Test
+		void importProductionCompaniesTwice() throws IOException {
+			ClassPathResource resource = new ClassPathResource("production_companies.json.gz");
+
+			String url = "/p/exports/production_company_ids_.*.json.gz";
+			stubEndpoint(resource, url);
+
+			webClient.get().uri("/import/production-company/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			webClient.get().uri("/import/production-company/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+		}
+
+		@Test
+		void importKeywordIds() throws IOException {
+			ClassPathResource resource = new ClassPathResource("keywords.json.gz");
+
+			String url = "/p/exports/keyword_ids_.*.json.gz";
+			stubEndpoint(resource, url);
+
+			webClient.get().uri("/import/keyword/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
+
+		@Test
+		void importKeywordIdsTwice() throws IOException {
+			ClassPathResource resource = new ClassPathResource("keywords.json.gz");
+
+			String url = "/p/exports/keyword_ids_.*.json.gz";
+			stubEndpoint(resource, url);
+
+			webClient.get().uri("/import/keyword/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			webClient.get().uri("/import/keyword/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
+
+		@Test
+		void importMovieIds() throws IOException {
+			ClassPathResource resource = new ClassPathResource("movies.json.gz");
+
+			String url = "/p/exports/movie_ids_.*.json.gz";
+			stubEndpoint(resource, url);
+
+			webClient.get().uri("/import/movie/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
+
+		@Test
+		void importPersonIds() throws IOException {
+			ClassPathResource resource = new ClassPathResource("persons.json.gz");
+
+			String url = "/p/exports/person_ids_.*.json.gz";
+			stubEndpoint(resource, url);
+
+			webClient.get().uri("/import/person/ids")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
+
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
 	}
 
-	@Test
-	void importProductionCompaniesTwice() throws IOException {
-		ClassPathResource resource = new ClassPathResource("production_companies.json.gz");
+	@Nested
+	public class UnprocessedImports {
 
-		String url = "/p/exports/production_company_ids_.*.json.gz";
-		stubEndpoint(resource, url);
+		@Test
+		void importPersons() throws IOException {
+			personRepository.saveAndFlush(new PersonEntity(1, false, "name", 0.0, false));
 
-		webClient.get().uri("/import/daily/production-companies")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+			ClassPathResource resource = new ClassPathResource("person.json");
 
-		webClient.get().uri("/import/daily/production-companies")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
-	}
+			String url = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,movie_credits,external_ids";
+			stubEndpointForJson(resource, url);
 
-	@Test
-	void importKeywordIds() throws IOException {
-		ClassPathResource resource = new ClassPathResource("keywords.json.gz");
+			webClient.get().uri("/import/person/unprocessed")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
 
-		String url = "/p/exports/keyword_ids_.*.json.gz";
-		stubEndpoint(resource, url);
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
 
-		webClient.get().uri("/import/daily/keyword-ids")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+		@Test
+		void importMovies() throws IOException {
+			movieRepository.saveAndFlush(new MovieEntity(1, false, "name", 0.0, false, false));
 
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
+			ClassPathResource resource = new ClassPathResource("movie.json");
 
-	@Test
-	void importKeywordIdsTwice() throws IOException {
-		ClassPathResource resource = new ClassPathResource("keywords.json.gz");
+			String url = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,keywords,external_ids,images,credits";
+			stubEndpointForJson(resource, url);
 
-		String url = "/p/exports/keyword_ids_.*.json.gz";
-		stubEndpoint(resource, url);
+			webClient.get().uri("/import/movie/unprocessed")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
 
-		webClient.get().uri("/import/daily/keyword-ids")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+		}
 
-		webClient.get().uri("/import/daily/keyword-ids")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+		@Test
+		void importKeywords() throws IOException {
+			keywordRepository.saveAndFlush(new KeywordEntity(378, "name", false));
 
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
+			ClassPathResource resource = new ClassPathResource("keyword_378_page1.json");
 
-	@Test
-	void importMovieIds() throws IOException {
-		ClassPathResource resource = new ClassPathResource("movies.json.gz");
+			String url = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_keywords=378";
+			stubEndpointForJson(resource, url);
 
-		String url = "/p/exports/movie_ids_.*.json.gz";
-		stubEndpoint(resource, url);
+			ClassPathResource resource2 = new ClassPathResource("keyword_378_page2.json");
+			String url2 = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=2&with_keywords=378";
+			//stubEndpointForJson(resource2, url2);
 
-		webClient.get().uri("/import/daily/movie-ids")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
+			webClient.get().uri("/import/keyword/unprocessed")
+					.exchange()
+					.expectStatus().is2xxSuccessful();
 
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
-
-	@Test
-	void importPersonIds() throws IOException {
-		ClassPathResource resource = new ClassPathResource("persons.json.gz");
-
-		String url = "/p/exports/person_ids_.*.json.gz";
-		stubEndpoint(resource, url);
-
-		webClient.get().uri("/import/daily/person-ids")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
-
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
-
-	@Disabled
-	@Test
-	void importPersons() throws IOException {
-		personRepository.saveAndFlush(new Person(1, false, "name", 0.0, false));
-
-		ClassPathResource resource = new ClassPathResource("persons.json.gz");
-
-		String url = "/3/person/1\\?api_key=.+&language=en-USappend_to_response=images,movie_credits,external_ids";
-		//stubEndpointForJson(resource, url);
-
-		webClient.get().uri("/import/persons")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
-
-		//verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
-
-	@Test
-	void importMovies() throws IOException {
-		movieRepository.saveAndFlush(new Movie(1, false, "name", 0.0, false, false));
-
-		ClassPathResource resource = new ClassPathResource("movie.json");
-
-		String url = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,keywords,external_ids,images";
-		stubEndpointForJson(resource, url);
-
-		webClient.get().uri("/import/movies")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
-
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-	}
-
-	@Test
-	void importKeywords() throws IOException {
-		keywordRepository.saveAndFlush(new Keyword(378, "name", false));
-
-		ClassPathResource resource = new ClassPathResource("keyword_378_page1.json");
-
-		String url = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_keywords=378";
-		stubEndpointForJson(resource, url);
-
-		ClassPathResource resource2 = new ClassPathResource("keyword_378_page2.json");
-		String url2 = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=2&with_keywords=378";
-		//stubEndpointForJson(resource2, url2);
-
-		webClient.get().uri("/import/keywords")
-				.exchange()
-				.expectStatus().is2xxSuccessful();
-
-		verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-		//verify(WireMock.getRequestedFor(WireMock.urlMatching(url2)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
+			//verify(WireMock.getRequestedFor(WireMock.urlMatching(url2)));
+		}
 	}
 
 	private void stubEndpoint(ClassPathResource resource, String url) throws IOException {

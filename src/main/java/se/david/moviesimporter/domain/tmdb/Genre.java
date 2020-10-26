@@ -1,27 +1,17 @@
-package se.david.moviesimporter.domain;
+package se.david.moviesimporter.domain.tmdb;
 
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-/**
- * {"id":378,"name":"prison"}
- */
-@Entity
-public class Keyword {
-	@Id
+public class Genre {
 	private long id;
 	private String name;
-	private boolean processed;
 
-	public Keyword() {
+	public Genre() {
 	}
 
-	public Keyword(long id, String name, boolean processed) {
+	public Genre(long id, String name) {
 		this.id = id;
 		this.name = name;
-		this.processed = processed;
 	}
 
 	public long getId() {
@@ -40,14 +30,6 @@ public class Keyword {
 		this.name = name;
 	}
 
-	public boolean isProcessed() {
-		return processed;
-	}
-
-	public void setProcessed(boolean processed) {
-		this.processed = processed;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -56,8 +38,8 @@ public class Keyword {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Keyword keyword = (Keyword) o;
-		return id == keyword.id;
+		Genre genre = (Genre) o;
+		return id == genre.id;
 	}
 
 	@Override
@@ -67,7 +49,7 @@ public class Keyword {
 
 	@Override
 	public String toString() {
-		return "Keyword{" +
+		return "Genre{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				'}';

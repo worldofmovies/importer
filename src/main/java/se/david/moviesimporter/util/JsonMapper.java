@@ -9,10 +9,11 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.david.moviesimporter.domain.Keyword;
-import se.david.moviesimporter.domain.Movie;
-import se.david.moviesimporter.domain.Person;
-import se.david.moviesimporter.domain.ProductionCompany;
+import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.Movie;
+import se.david.moviesimporter.domain.tmdb.Person;
+import se.david.moviesimporter.domain.tmdb.ProductionCompany;
 
 public final class JsonMapper {
 	private static final Logger log = getLogger(JsonMapper.class);

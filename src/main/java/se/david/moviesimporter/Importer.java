@@ -3,18 +3,15 @@ package se.david.moviesimporter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import se.david.moviesimporter.domain.Keyword;
-import se.david.moviesimporter.domain.Movie;
-import se.david.moviesimporter.domain.Person;
-import se.david.moviesimporter.domain.ProductionCompany;
+import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.Movie;
+import se.david.moviesimporter.domain.tmdb.Person;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
@@ -38,10 +35,11 @@ public class Importer {
 	private ProductionCompanyRepository productionCompanyRepository;
 
 	public String importMovie(long movieId) {
-		String url = String.format("%s/3/movie/%s?api_key=%s&language=en-US&append_to_response=alternative_titles,keywords,external_ids,images", tmdbApiUrl, movieId, apiKey);
+		String additionals = "alternative_titles,keywords,external_ids,images,credits";
+		String url = String.format("%s/3/movie/%s?api_key=%s&language=en-US&append_to_response=%s", tmdbApiUrl, movieId, apiKey, additionals);
 		try {
 			Optional<Movie> result = RestTemplateFetcher.fetchMovie(url);
-			if(result.isPresent()) {
+			if (result.isPresent()) {
 				movieRepository.setToProcessed(movieId);
 			} else {
 				movieRepository.deleteByIdWithTransaction(movieId);
@@ -54,10 +52,10 @@ public class Importer {
 	}
 
 	public String importPerson(long personId) {
-		String url = String.format("%s/3/person/%s?api_key=%s&language=en-USappend_to_response=images,movie_credits,external_ids", tmdbApiUrl, personId, apiKey);
+		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,movie_credits,external_ids", tmdbApiUrl, personId, apiKey);
 		try {
 			Optional<Person> result = RestTemplateFetcher.fetchPerson(url);
-			if(result.isPresent()) {
+			if (result.isPresent()) {
 				personRepository.setToProcessed(personId);
 			} else {
 				personRepository.deleteByIdWithTransaction(personId);
@@ -74,7 +72,8 @@ public class Importer {
 		String url = String.format("%s/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=%s&with_keywords=%s", tmdbApiUrl, apiKey, page, keywordId);
 		try {
 			Optional<Keyword> result = RestTemplateFetcher.fetchKeyword(url);
-			if(result.isPresent()) {
+			if (result.isPresent()) {
+				System.out.println(result.get());
 				keywordRepository.setToProcessed(keywordId);
 			} else {
 				keywordRepository.deleteByIdWithTransaction(keywordId);

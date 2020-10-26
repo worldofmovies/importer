@@ -16,9 +16,12 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
-import se.david.moviesimporter.domain.Keyword;
-import se.david.moviesimporter.domain.Movie;
-import se.david.moviesimporter.domain.Person;
+import se.david.moviesimporter.domain.entities.KeywordEntity;
+import se.david.moviesimporter.domain.entities.MovieEntity;
+import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.Movie;
+import se.david.moviesimporter.domain.tmdb.Person;
 
 public final class RestTemplateFetcher {
 	private static final Logger log = getLogger(RestTemplateFetcher.class);

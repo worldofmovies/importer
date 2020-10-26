@@ -1,7 +1,6 @@
 package se.david.moviesimporter.repository;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -10,13 +9,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import se.david.moviesimporter.domain.Person;
+import se.david.moviesimporter.domain.entities.PersonEntity;
 
 @Repository
-public interface PersonRepository extends JpaRepository<Person, Long> {
+public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
 	@Transactional
-	default List<Person> saveAllWithTransaction(List<Person> persons){
-		return saveAll(persons);
+	default List<PersonEntity> saveAllWithTransaction(List<PersonEntity> personEntities){
+		return saveAll(personEntities);
 	}
 
 	@Transactional

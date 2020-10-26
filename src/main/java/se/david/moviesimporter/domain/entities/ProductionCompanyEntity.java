@@ -1,16 +1,27 @@
-package se.david.moviesimporter.domain;
+package se.david.moviesimporter.domain.entities;
 
 import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity
-public class ProductionCompany {
+@Entity(name = "ProductionCompany")
+@Table(name = "production_company")
+public class ProductionCompanyEntity {
 	@Id
 	private long id;
 	private String name;
 	private boolean processed;
+
+	public ProductionCompanyEntity() {
+	}
+
+	public ProductionCompanyEntity(long id, String name, boolean processed) {
+		this.id = id;
+		this.name = name;
+		this.processed = processed;
+	}
 
 	public long getId() {
 		return id;
@@ -44,7 +55,7 @@ public class ProductionCompany {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ProductionCompany that = (ProductionCompany) o;
+		ProductionCompanyEntity that = (ProductionCompanyEntity) o;
 		return id == that.id;
 	}
 
