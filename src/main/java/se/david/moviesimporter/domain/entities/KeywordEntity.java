@@ -7,6 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.KeywordData;
 
 /**
  * {"id":378,"name":"prison"}
@@ -77,8 +78,7 @@ public class KeywordEntity {
 				'}';
 	}
 
-	public void processInfo(Keyword keyword) {
-		this.name = keyword.getName();
+	public void processInfo(KeywordData keyword) {
 		this.processed = true;
 	}
 }

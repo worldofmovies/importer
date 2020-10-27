@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
 import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.KeywordData;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
 import se.david.moviesimporter.domain.tmdb.ProductionCompany;
@@ -43,8 +44,8 @@ public final class RestTemplateFetcher {
 		return fetch(url, new Movie());
 	}
 
-	public static Optional<Keyword> fetchKeyword(String url) throws IOException {
-		return fetch(url, new Keyword());
+	public static Optional<KeywordData> fetchKeyword(String url) throws IOException {
+		return fetch(url, new KeywordData());
 	}
 
 	public static Optional<Person> fetchPerson(String url) throws IOException {

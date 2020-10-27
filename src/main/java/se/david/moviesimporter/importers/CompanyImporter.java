@@ -21,7 +21,7 @@ public class CompanyImporter extends BaseImporter {
 		try {
 			RestTemplateFetcher.fetchCompany(url)
 					.ifPresentOrElse(handleProcessed(companyId), handleDeleted(companyId));
-			return "Done";
+			return String.format("Processed company: %s", companyId);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

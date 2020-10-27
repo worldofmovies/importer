@@ -270,14 +270,14 @@ class MoviesDailyImporterApplicationTests {
 
 			ClassPathResource resource2 = new ClassPathResource("keyword_378_page2.json");
 			String url2 = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=2&with_keywords=378";
-			//stubEndpointForJson(resource2, url2);
+			stubEndpointForJson(resource2, url2);
 
 			webClient.get().uri("/import/keyword/unprocessed")
 					.exchange()
 					.expectStatus().is2xxSuccessful();
 
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-			//verify(WireMock.getRequestedFor(WireMock.urlMatching(url2)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(url2)));
 		}
 
 		@Test
@@ -328,6 +328,8 @@ class MoviesDailyImporterApplicationTests {
 
 			String keywordUrl = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_keywords=378";
 			stubEndpointForJson(new ClassPathResource("keyword_378_page1.json"), keywordUrl);
+			String keywordUrl2 = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=2&with_keywords=378";
+			stubEndpointForJson(new ClassPathResource("keyword_378_page2.json"), keywordUrl2);
 
 			String companyUrl = "/3/company/378\\?api_key=API_KEY";
 			stubEndpointForJson(new ClassPathResource("production_company.json"), companyUrl);
@@ -350,6 +352,7 @@ class MoviesDailyImporterApplicationTests {
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(personUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(movieUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(keywordUrl)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(keywordUrl2)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(companyUrl)));
 		}
 

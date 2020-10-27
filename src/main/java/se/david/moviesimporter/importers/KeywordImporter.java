@@ -1,46 +1,53 @@
 package se.david.moviesimporter.importers;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.david.moviesimporter.domain.tmdb.Keyword;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class KeywordImporter extends BaseImporter {
+	private static final String urlFormat = "%s/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=%s&with_keywords=%s";
+	private static final Logger log = getLogger(KeywordImporter.class);
+
 	@Autowired
 	private KeywordRepository keywordRepository;
 
 	public String processEntity(long keywordId) {
 		int page = 1;
-		String url = String.format("%s/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=%s&with_keywords=%s", tmdbApiUrl, apiKey, page, keywordId);
+		int processedPages = handlePagination(keywordId, page);
+		return String.format("Processed: %s pages for keyword: %s", processedPages, keywordId);
+	}
+
+	private Integer handlePagination(long keywordId, int page) {
+		String url = String.format(urlFormat, tmdbApiUrl, apiKey, page, keywordId);
 		try {
-			RestTemplateFetcher.fetchKeyword(url)
-					.ifPresentOrElse(handleProcessedKeyword(keywordId), handleDeletedKeyword(keywordId));
-			return "Done";
+			return RestTemplateFetcher.fetchKeyword(url)
+					.flatMap(result -> keywordRepository.findById(keywordId)
+							.map(keyword -> {
+								keyword.processInfo(result);
+								keywordRepository.saveAndFlush(keyword);
+								if (result.getPage() < result.getTotalPages()) {
+									return handlePagination(keywordId, result.getPage() + 1);
+								} else {
+									return result.getPage();
+								}
+							}))
+					.orElseGet(() -> {
+						keywordRepository.deleteByIdWithTransaction(keywordId);
+						return 0;
+					});
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	private Runnable handleDeletedKeyword(long keywordId) {
-		return () -> keywordRepository.deleteByIdWithTransaction(keywordId);
-	}
-
-	private Consumer<Keyword> handleProcessedKeyword(long keywordId) {
-		return result -> {
-			keywordRepository.findById(keywordId)
-					.ifPresent(keyword -> {
-						keyword.processInfo(result);
-						keywordRepository.saveAndFlush(keyword);
-					});
-		};
 	}
 
 	@Override
