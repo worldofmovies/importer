@@ -16,9 +16,9 @@ public class Api {
 	@Autowired
 	private Importer importer;
 
-	@GetMapping(path = "/import/production-company/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	Flux<String> dailyFileOnProductionCompanies() {
-		return dailyImporter.getProductionCompanyIds();
+	@GetMapping(path = "/import/company/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> dailyFileOnCompanies() {
+		return dailyImporter.getCompanyIds();
 	}
 
 	@GetMapping(path = "/import/keyword/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -36,6 +36,10 @@ public class Api {
 		return dailyImporter.getPersonIds();
 	}
 
+	@GetMapping(path = "/import/collection/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> dailyFileOnCollectionIds() {
+		return dailyImporter.getCollectionIds();
+	}
 
 	@GetMapping(path = "/import/person/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<String> fetchPersons() {
@@ -59,5 +63,41 @@ public class Api {
 				.parallel(5)
 				.map(id -> importer.importKeywords(id))
 				.sequential();
+	}
+
+	@GetMapping(path = "/import/collection/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> fetchCollections() {
+		return Flux.fromIterable(importer.findUnprocessedCollections())
+				.parallel(5)
+				.map(id -> importer.importCollection(id))
+				.sequential();
+	}
+
+	@GetMapping(path = "/import/company/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> fetchCompanies() {
+		return Flux.fromIterable(importer.findUnprocessedCompanies())
+				.parallel(5)
+				.map(id -> importer.importCompany(id))
+				.sequential();
+	}
+
+	@GetMapping(path = "/import/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> fetchAllIds() {
+		return Flux.concat(dailyFileOnKeywordIds(),
+				dailyFileOnCompanies(),
+				dailyFileOnCollectionIds(),
+				dailyFileOnPersonIds(),
+				dailyFileOnMovieIds())
+				.onBackpressureBuffer();
+	}
+
+	@GetMapping(path = "/import/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> fetchAllUnprocesseds() {
+		return fetchKeywords()
+				.concatWith(fetchCompanies())
+				.concatWith(fetchCollections())
+				.concatWith(fetchPersons())
+				.concatWith(fetchMovies())
+				.onBackpressureBuffer();
 	}
 }

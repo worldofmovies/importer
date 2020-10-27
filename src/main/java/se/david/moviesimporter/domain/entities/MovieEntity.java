@@ -10,6 +10,8 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import se.david.moviesimporter.domain.tmdb.Movie;
+
 /**
  * {"adult":false,"id":3924,"original_title":"Blondie","popularity":2.405,"video":false}
  */
@@ -26,9 +28,6 @@ public class MovieEntity {
 	private double popularity;
 	private boolean video;
 	private boolean processed;
-	private String backdrop_path;
-	@JsonProperty("")
-	private long collectionId;
 
 
 	public MovieEntity() {
@@ -117,5 +116,11 @@ public class MovieEntity {
 				", popularity=" + popularity +
 				", video=" + video +
 				'}';
+	}
+
+	public void processInfo(Movie movie) {
+		this.originalTitle = movie.getOriginalTitle();
+		this.popularity = movie.getPopularity();
+		this.processed = true;
 	}
 }

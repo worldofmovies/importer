@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import se.david.moviesimporter.domain.entities.CollectionEntity;
+
 public class BelongsToCollection {
 	private long id;
 	private String name;
@@ -79,5 +81,9 @@ public class BelongsToCollection {
 				", posterPath='" + posterPath + '\'' +
 				", backdropPath='" + backdropPath + '\'' +
 				'}';
+	}
+
+	public static CollectionEntity createEntity(BelongsToCollection belongsToCollection) {
+		return new CollectionEntity(belongsToCollection.getId(), belongsToCollection.getName(), false);
 	}
 }

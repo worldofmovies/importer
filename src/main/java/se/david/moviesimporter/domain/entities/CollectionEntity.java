@@ -6,20 +6,23 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import se.david.moviesimporter.domain.tmdb.ProductionCompany;
+import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
 
-@Entity(name = "ProductionCompany")
-@Table(name = "production_company")
-public class ProductionCompanyEntity {
+/**
+ * {"id":378,"name":"prison"}
+ */
+@Entity(name = "Collection")
+@Table(name = "collection")
+public class CollectionEntity {
 	@Id
 	private long id;
 	private String name;
 	private boolean processed;
 
-	public ProductionCompanyEntity() {
+	public CollectionEntity() {
 	}
 
-	public ProductionCompanyEntity(long id, String name, boolean processed) {
+	public CollectionEntity(long id, String name, boolean processed) {
 		this.id = id;
 		this.name = name;
 		this.processed = processed;
@@ -57,8 +60,8 @@ public class ProductionCompanyEntity {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ProductionCompanyEntity that = (ProductionCompanyEntity) o;
-		return id == that.id;
+		CollectionEntity keywordEntity = (CollectionEntity) o;
+		return id == keywordEntity.id;
 	}
 
 	@Override
@@ -68,14 +71,15 @@ public class ProductionCompanyEntity {
 
 	@Override
 	public String toString() {
-		return "ProductionCompany{" +
+		return "CollectionEntity{" +
 				"id=" + id +
 				", name='" + name + '\'' +
+				", processed=" + processed +
 				'}';
 	}
 
-	public void processInfo(ProductionCompany company) {
-		this.name = company.getName();
+	public void processInfo(BelongsToCollection collection) {
+		this.name = collection.getName();
 		this.processed = true;
 	}
 }

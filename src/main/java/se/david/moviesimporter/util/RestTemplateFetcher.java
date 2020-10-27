@@ -16,12 +16,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
-import se.david.moviesimporter.domain.entities.KeywordEntity;
-import se.david.moviesimporter.domain.entities.MovieEntity;
-import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
 import se.david.moviesimporter.domain.tmdb.Keyword;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
+import se.david.moviesimporter.domain.tmdb.ProductionCompany;
 
 public final class RestTemplateFetcher {
 	private static final Logger log = getLogger(RestTemplateFetcher.class);
@@ -41,25 +40,28 @@ public final class RestTemplateFetcher {
 	}
 
 	public static Optional<Movie> fetchMovie(String url) throws IOException {
-		try {
-			ResponseEntity<Movie> response = restTemplate.getForEntity(url, Movie.class);
-			if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-				return Optional.ofNullable(response.getBody());
-			} else if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-				return Optional.empty();
-			} else {
-				log.error("Unknown error code: {} when calling: {}", response.getStatusCode(), url);
-				throw new IOException("Error handling url=" + url);
-			}
-		} catch (Exception e) {
-			log.error("Something went wrong: {}", e.getMessage(), e);
-			throw new IOException("Could not call " + url, e);
-		}
+		return fetch(url, new Movie());
 	}
 
 	public static Optional<Keyword> fetchKeyword(String url) throws IOException {
+		return fetch(url, new Keyword());
+	}
+
+	public static Optional<Person> fetchPerson(String url) throws IOException {
+		return fetch(url, new Person());
+	}
+
+	public static Optional<BelongsToCollection> fetchCollection(String url) throws IOException {
+		return fetch(url, new BelongsToCollection());
+	}
+
+	public static Optional<ProductionCompany> fetchCompany(String url) throws IOException {
+		return fetch(url, new ProductionCompany());
+	}
+
+	public static <T> Optional<T> fetch(String url, T t) throws IOException {
 		try {
-			ResponseEntity<Keyword> response = restTemplate.getForEntity(url, Keyword.class);
+			ResponseEntity<T> response = restTemplate.getForEntity(url, (Class<T>) t.getClass());
 			if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
 				return Optional.ofNullable(response.getBody());
 			} else if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -74,20 +76,4 @@ public final class RestTemplateFetcher {
 		}
 	}
 
-	public static Optional<Person> fetchPerson(String url) throws IOException {
-		try {
-			ResponseEntity<Person> response = restTemplate.getForEntity(url, Person.class);
-			if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
-				return Optional.ofNullable(response.getBody());
-			} else if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-				return Optional.empty();
-			} else {
-				log.error("Unknown error code: {} when calling: {}", response.getStatusCode(), url);
-				throw new IOException("Error handling url=" + url);
-			}
-		} catch (Exception e) {
-			log.error("Something went wrong: {}", e.getMessage(), e);
-			throw new IOException("Could not call " + url, e);
-		}
-	}
 }

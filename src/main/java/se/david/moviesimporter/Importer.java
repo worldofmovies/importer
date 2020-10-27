@@ -1,22 +1,16 @@
 package se.david.moviesimporter;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import se.david.moviesimporter.domain.entities.PersonEntity;
-import se.david.moviesimporter.domain.tmdb.Keyword;
-import se.david.moviesimporter.domain.tmdb.Movie;
-import se.david.moviesimporter.domain.tmdb.Person;
-import se.david.moviesimporter.repository.KeywordRepository;
-import se.david.moviesimporter.repository.MovieRepository;
-import se.david.moviesimporter.repository.PersonRepository;
-import se.david.moviesimporter.repository.ProductionCompanyRepository;
-import se.david.moviesimporter.util.RestTemplateFetcher;
+import se.david.moviesimporter.importers.CollectionImporter;
+import se.david.moviesimporter.importers.CompanyImporter;
+import se.david.moviesimporter.importers.KeywordImporter;
+import se.david.moviesimporter.importers.MovieImporter;
+import se.david.moviesimporter.importers.PersonImporter;
 
 @Service
 public class Importer {
@@ -26,74 +20,54 @@ public class Importer {
 	private String apiKey;
 
 	@Autowired
-	private PersonRepository personRepository;
+	private PersonImporter personImporter;
 	@Autowired
-	private KeywordRepository keywordRepository;
+	private KeywordImporter keywordImporter;
 	@Autowired
-	private MovieRepository movieRepository;
+	private MovieImporter movieImporter;
 	@Autowired
-	private ProductionCompanyRepository productionCompanyRepository;
+	private CompanyImporter companyImporter;
+	@Autowired
+	private CollectionImporter collectionImporter;
+
+	public List<Long> findUnprocessedMovies() {
+		return movieImporter.findAllUnprocessed();
+	}
 
 	public String importMovie(long movieId) {
-		String additionals = "alternative_titles,keywords,external_ids,images,credits";
-		String url = String.format("%s/3/movie/%s?api_key=%s&language=en-US&append_to_response=%s", tmdbApiUrl, movieId, apiKey, additionals);
-		try {
-			Optional<Movie> result = RestTemplateFetcher.fetchMovie(url);
-			if (result.isPresent()) {
-				movieRepository.setToProcessed(movieId);
-			} else {
-				movieRepository.deleteByIdWithTransaction(movieId);
-			}
-			return "Done";
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return movieImporter.processEntity(movieId);
 	}
 
 	public String importPerson(long personId) {
-		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,movie_credits,external_ids", tmdbApiUrl, personId, apiKey);
-		try {
-			Optional<Person> result = RestTemplateFetcher.fetchPerson(url);
-			if (result.isPresent()) {
-				personRepository.setToProcessed(personId);
-			} else {
-				personRepository.deleteByIdWithTransaction(personId);
-			}
-			return "Done";
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public String importKeywords(long keywordId) {
-		int page = 1;
-		String url = String.format("%s/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=%s&with_keywords=%s", tmdbApiUrl, apiKey, page, keywordId);
-		try {
-			Optional<Keyword> result = RestTemplateFetcher.fetchKeyword(url);
-			if (result.isPresent()) {
-				System.out.println(result.get());
-				keywordRepository.setToProcessed(keywordId);
-			} else {
-				keywordRepository.deleteByIdWithTransaction(keywordId);
-			}
-			return "Done";
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return personImporter.processEntity(personId);
 	}
 
 	public List<Long> findUnprocessedPersons() {
-		return personRepository.findAllUnprocessed();
+		return personImporter.findAllUnprocessed();
+	}
+
+	public String importKeywords(long keywordId) {
+		return keywordImporter.processEntity(keywordId);
 	}
 
 	public List<Long> findUnprocessedKeywords() {
-		return keywordRepository.findAllUnprocessed();
+		return keywordImporter.findAllUnprocessed();
 	}
 
-	public List<Long> findUnprocessedMovies() {
-		return movieRepository.findAllUnprocessed();
+	public String importCompany(long companyId) {
+		return companyImporter.processEntity(companyId);
 	}
+
+	public List<Long> findUnprocessedCompanies() {
+		return companyImporter.findAllUnprocessed();
+	}
+
+	public String importCollection(long id) {
+		return collectionImporter.processEntity(id);
+	}
+
+	public List<Long> findUnprocessedCollections() {
+		return collectionImporter.findAllUnprocessed();
+	}
+
 }

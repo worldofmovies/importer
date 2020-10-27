@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import se.david.moviesimporter.domain.tmdb.Person;
+
 /*
 {"adult":false,"id":1293830,"name":"Santiago  Bertolino","popularity":0.6}
  */
@@ -98,5 +100,11 @@ public class PersonEntity {
 				", popularity=" + popularity +
 				", processed=" + processed +
 				'}';
+	}
+
+	public void processInfo(Person person) {
+		this.name = person.getName();
+		this.popularity = person.getPopularity();
+		this.processed = true;
 	}
 }

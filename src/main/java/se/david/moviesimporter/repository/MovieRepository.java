@@ -18,14 +18,8 @@ public interface MovieRepository extends JpaRepository<MovieEntity, Long> {
 		return saveAll(movieEntities);
 	}
 
-	@Transactional
 	@Query(value = "select m.id from Movie m where m.processed = false")
 	List<Long> findAllUnprocessed();
-
-	@Transactional
-	@Modifying
-	@Query("update Movie m set m.processed = true where m.id = ?1")
-	void setToProcessed(long id);
 
 	@Transactional
 	@Modifying

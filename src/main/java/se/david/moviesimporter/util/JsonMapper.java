@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.david.moviesimporter.domain.entities.PersonEntity;
+import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
 import se.david.moviesimporter.domain.tmdb.Keyword;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
@@ -59,6 +59,17 @@ public final class JsonMapper {
 		return content -> {
 			try {
 				return objectMapper.readValue(content, Keyword.class);
+			} catch (JsonProcessingException e) {
+				log.error("Error: {}", e.getMessage(), e);
+				return null;
+			}
+		};
+	}
+
+	public static Function<String, BelongsToCollection> mapCollection() {
+		return content -> {
+			try {
+				return objectMapper.readValue(content, BelongsToCollection.class);
 			} catch (JsonProcessingException e) {
 				log.error("Error: {}", e.getMessage(), e);
 				return null;

@@ -14,18 +14,12 @@ import se.david.moviesimporter.domain.entities.PersonEntity;
 @Repository
 public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
 	@Transactional
-	default List<PersonEntity> saveAllWithTransaction(List<PersonEntity> personEntities){
+	default List<PersonEntity> saveAllWithTransaction(List<PersonEntity> personEntities) {
 		return saveAll(personEntities);
 	}
 
-	@Transactional
 	@Query(value = "select p.id from Person p where p.processed = false")
 	List<Long> findAllUnprocessed();
-
-	@Transactional
-	@Modifying
-	@Query("update Person p set p.processed = true where p.id = ?1")
-	void setToProcessed(long id);
 
 	@Transactional
 	@Modifying
