@@ -6,11 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
+import se.david.moviesimporter.domain.tmdb.CollectionData;
 
-/**
- * {"id":378,"name":"prison"}
- */
 @Entity(name = "Collection")
 @Table(name = "collection")
 public class CollectionEntity {
@@ -78,7 +75,7 @@ public class CollectionEntity {
 				'}';
 	}
 
-	public void processInfo(BelongsToCollection collection) {
+	public void processInfo(CollectionData collection) {
 		this.name = collection.getName();
 		this.processed = true;
 	}

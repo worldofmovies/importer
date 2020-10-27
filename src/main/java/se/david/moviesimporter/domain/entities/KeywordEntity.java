@@ -1,9 +1,15 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import se.david.moviesimporter.domain.tmdb.Keyword;
@@ -19,6 +25,12 @@ public class KeywordEntity {
 	private long id;
 	private String name;
 	private boolean processed;
+
+	@ManyToMany(targetEntity = MovieEntity.class)
+	@JoinTable(name = "keyword_movie",
+			joinColumns = { @JoinColumn(name = "fk_keyword") },
+			inverseJoinColumns = { @JoinColumn(name = "fk_movie") })
+	private List<MovieEntity> movies = new ArrayList<>();
 
 	public KeywordEntity() {
 	}
@@ -53,6 +65,14 @@ public class KeywordEntity {
 		this.processed = processed;
 	}
 
+	public List<MovieEntity> getMovies() {
+		return movies;
+	}
+
+	public void setMovies(List<MovieEntity> movies) {
+		this.movies = movies;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -78,7 +98,8 @@ public class KeywordEntity {
 				'}';
 	}
 
-	public void processInfo(KeywordData keyword) {
+	public void processInfo(List<MovieEntity> movies) {
 		this.processed = true;
+		this.movies.addAll(movies);
 	}
 }

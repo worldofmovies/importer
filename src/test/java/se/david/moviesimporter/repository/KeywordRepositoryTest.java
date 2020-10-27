@@ -8,33 +8,42 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import se.david.moviesimporter.domain.entities.KeywordEntity;
+import se.david.moviesimporter.domain.entities.MovieEntity;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 public class KeywordRepositoryTest {
 	@Autowired
 	private KeywordRepository keywordRepository;
+	@Autowired
+	private MovieRepository movieRepository;
 
 	@Before
 	public void setup() {
 		keywordRepository.deleteAll();
+		movieRepository.deleteAll();
 	}
 
 	@Test
-	public void asd() {
-		List<Long> insertedIds = keywordRepository.batchInsertUnprocessed(Arrays.asList(1L));
+	public void testKeywordMovieRelation() {
+		KeywordEntity unprocessedKeyword = keywordRepository.saveAndFlush(new KeywordEntity(1, "name", false));
 
-		assertEquals(Arrays.asList(1L), insertedIds);
-		assertEquals(Arrays.asList(1L), keywordRepository.findAllUnprocessed());
-	}
+		MovieEntity unprocessedMovie = movieRepository.saveAndFlush(new MovieEntity(1, false, "title", 0.0, false, false));
 
-	@Test
-	public void asd2() {
-		keywordRepository.insertUnprocessed(2L);
+		unprocessedKeyword.processInfo(Arrays.asList(unprocessedMovie));
+		keywordRepository.saveAndFlush(unprocessedKeyword);
 
-		assertEquals(Arrays.asList(2L), keywordRepository.findAllUnprocessed());
+		keywordRepository.getOne(1L)
+				.getMovies()
+				.stream()
+				.filter(a -> a.getId() == 1L)
+				.findAny()
+				.orElseThrow(() -> new AssertionFailedError("Movie relation not found"));
 	}
 }

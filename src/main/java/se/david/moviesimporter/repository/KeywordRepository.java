@@ -19,17 +19,6 @@ public interface KeywordRepository extends JpaRepository<KeywordEntity, Long> {
 		return saveAll(keywordEntities);
 	}
 
-	@Modifying
-	@Query(value = "insert into Keyword (id,processed) values (:id, false)", nativeQuery = true)
-	void insertUnprocessed(@Param("id") Long id);
-
-	@Transactional
-	@Modifying
-	default List<Long> batchInsertUnprocessed(List<Long> ids) {
-		ids.forEach(this::insertUnprocessed);
-		return ids;
-	}
-
 	@Query(value = "select k.id from Keyword k where k.processed = false")
 	List<Long> findAllUnprocessed();
 

@@ -18,19 +18,20 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
 import se.david.moviesimporter.domain.entities.CollectionEntity;
+import se.david.moviesimporter.domain.entities.KeywordEntity;
 import se.david.moviesimporter.domain.entities.MovieEntity;
 import se.david.moviesimporter.domain.entities.PersonEntity;
-import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
-import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
+import se.david.moviesimporter.domain.entities.CompanyEntity;
+import se.david.moviesimporter.domain.tmdb.CollectionId;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Keyword;
 import se.david.moviesimporter.domain.tmdb.Person;
-import se.david.moviesimporter.domain.tmdb.ProductionCompany;
+import se.david.moviesimporter.domain.tmdb.CompanyId;
 import se.david.moviesimporter.repository.CollectionRepository;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
-import se.david.moviesimporter.repository.ProductionCompanyRepository;
+import se.david.moviesimporter.repository.CompanyRepository;
 import se.david.moviesimporter.util.FileReader;
 import se.david.moviesimporter.util.JsonMapper;
 import se.david.moviesimporter.util.RestTemplateFetcher;
@@ -48,7 +49,7 @@ public class DailyImporter {
 	private final MovieRepository movieRepository;
 	private final CollectionRepository collectionRepository;
 	private final PersonRepository personRepository;
-	private final ProductionCompanyRepository productionCompanyRepository;
+	private final CompanyRepository companyRepository;
 
 	@Value("${tmdb.files.url:http://files.tmdb.org}")
 	private String tmdbFilesUrl;
@@ -58,13 +59,13 @@ public class DailyImporter {
 			MovieRepository movieRepository,
 			CollectionRepository collectionRepository,
 			PersonRepository personRepository,
-			ProductionCompanyRepository productionCompanyRepository) {
+			CompanyRepository companyRepository) {
 		this.localDate = LocalDate.now(ZoneId.of("Europe/Stockholm")).minusDays(1);
 		this.keywordRepository = keywordRepository;
 		this.movieRepository = movieRepository;
 		this.collectionRepository = collectionRepository;
 		this.personRepository = personRepository;
-		this.productionCompanyRepository = productionCompanyRepository;
+		this.companyRepository = companyRepository;
 	}
 
 	public Flux<String> getCompanyIds() {
@@ -84,14 +85,14 @@ public class DailyImporter {
 				.buffer(buffer)
 				.parallel(5)
 				.map(a -> {
-					List<ProductionCompanyEntity> found = productionCompanyRepository.findAllById(a.stream().map(ProductionCompany::getId).collect(Collectors.toList()));
+					List<CompanyEntity> found = companyRepository.findAllById(a.stream().map(CompanyId::getId).collect(Collectors.toList()));
 					return a.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
-							.map(ProductionCompany::createEntity)
+							.map(CompanyId::createEntity)
 							.collect(Collectors.toList());
 				})
-				.flatMap(productionCompanies -> Flux.fromIterable(productionCompanyRepository.saveAllWithTransaction(productionCompanies)))
-				.filter(a -> counter.incrementAndGet() % 10_000 == 0)
+				.map(productionCompanies -> Flux.fromIterable(companyRepository.saveAllWithTransaction(productionCompanies)))
+				.filter(a -> counter.addAndGet(buffer) % 10_000 == 0)
 				.map(a -> String.format("Processed: %s", counter.get()))
 				.doOnNext(a -> log.info("Processed: {} production companies", counter.get()))
 				.sequential();
@@ -111,16 +112,16 @@ public class DailyImporter {
 				.onBackpressureBuffer()
 				.map(JsonMapper.mapKeyword())
 				.filter(Objects::nonNull)
-				.map(Keyword::getId)
 				.buffer(buffer)
 				.parallel(5)
 				.map(a -> {
-					List<Long> ad = keywordRepository.findAllUnprocessed(a);
+					List<KeywordEntity> ad = keywordRepository.findAllById(a.stream().map(Keyword::getId).collect(Collectors.toList()));
 					return a.stream()
-							.filter(b -> !ad.contains(b))
+							.filter(b -> ad.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(Keyword::createEntity)
 							.collect(Collectors.toList());
 				})
-				.map(keywordRepository::batchInsertUnprocessed)
+				.map(keywordRepository::saveAllWithTransaction)
 				.filter(a -> counter.addAndGet(buffer) % 10_000 == 0)
 				.map(a -> String.format("Processed: %s", counter.get()))
 				.doOnNext(a -> log.info("Processed: {} keywords", counter.get()))
@@ -151,8 +152,8 @@ public class DailyImporter {
 							.map(Person::createEntity)
 							.collect(Collectors.toList());
 				})
-				.flatMap(persons -> Flux.fromIterable(personRepository.saveAllWithTransaction(persons)))
-				.filter(a -> counter.incrementAndGet() % 10_000 == 0)
+				.map(persons -> Flux.fromIterable(personRepository.saveAllWithTransaction(persons)))
+				.filter(a -> counter.addAndGet(buffer) % 10_000 == 0)
 				.map(a -> String.format("Processed: %s", counter.get()))
 				.doOnNext(a -> log.info("Processed: {} persons", counter.get()))
 				.sequential();
@@ -182,8 +183,8 @@ public class DailyImporter {
 							.map(Movie::createEntity)
 							.collect(Collectors.toList());
 				})
-				.flatMap(movies -> Flux.fromIterable(movieRepository.saveAllWithTransaction(movies)))
-				.filter(a -> counter.incrementAndGet() % 10_000 == 0)
+				.map(movies -> Flux.fromIterable(movieRepository.saveAllWithTransaction(movies)))
+				.filter(a -> counter.addAndGet(buffer) % 10_000 == 0)
 				.map(movie -> String.format("Processed: %s", counter.get()))
 				.doOnNext(a -> log.info("Processed: {} movies", counter.get()))
 				.sequential();
@@ -206,14 +207,14 @@ public class DailyImporter {
 				.buffer(buffer)
 				.parallel(5)
 				.map(a -> {
-					List<CollectionEntity> found = collectionRepository.findAllById(a.stream().map(BelongsToCollection::getId).collect(Collectors.toList()));
+					List<CollectionEntity> found = collectionRepository.findAllById(a.stream().map(CollectionId::getId).collect(Collectors.toList()));
 					return a.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
-							.map(BelongsToCollection::createEntity)
+							.map(CollectionId::createEntity)
 							.collect(Collectors.toList());
 				})
-				.flatMap(collections -> Flux.fromIterable(collectionRepository.saveAllWithTransaction(collections)))
-				.filter(a -> counter.incrementAndGet() % 1000 == 0)
+				.map(collections -> Flux.fromIterable(collectionRepository.saveAllWithTransaction(collections)))
+				.filter(a -> counter.addAndGet(buffer) % 1000 == 0)
 				.map(movie -> String.format("Processed: %s", counter.get()))
 				.doOnNext(a -> log.info("Processed: {} collections", counter.get()))
 				.sequential();

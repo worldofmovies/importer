@@ -16,8 +16,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
-import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
-import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.CollectionData;
 import se.david.moviesimporter.domain.tmdb.KeywordData;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
@@ -52,8 +51,8 @@ public final class RestTemplateFetcher {
 		return fetch(url, new Person());
 	}
 
-	public static Optional<BelongsToCollection> fetchCollection(String url) throws IOException {
-		return fetch(url, new BelongsToCollection());
+	public static Optional<CollectionData> fetchCollection(String url) throws IOException {
+		return fetch(url, new CollectionData());
 	}
 
 	public static Optional<ProductionCompany> fetchCompany(String url) throws IOException {

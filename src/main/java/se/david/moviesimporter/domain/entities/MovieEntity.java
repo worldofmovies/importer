@@ -1,10 +1,12 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -28,6 +30,9 @@ public class MovieEntity {
 	private double popularity;
 	private boolean video;
 	private boolean processed;
+
+	@ManyToMany(targetEntity = KeywordEntity.class, mappedBy = "movies")
+	private List<KeywordEntity> keywords;
 
 
 	public MovieEntity() {
@@ -88,6 +93,14 @@ public class MovieEntity {
 
 	public void setProcessed(boolean processed) {
 		this.processed = processed;
+	}
+
+	public List<KeywordEntity> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(List<KeywordEntity> keywords) {
+		this.keywords = keywords;
 	}
 
 	@Override

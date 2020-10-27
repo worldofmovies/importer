@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.david.moviesimporter.domain.tmdb.ProductionCompany;
-import se.david.moviesimporter.repository.ProductionCompanyRepository;
+import se.david.moviesimporter.repository.CompanyRepository;
 import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class CompanyImporter extends BaseImporter {
 	@Autowired
-	private ProductionCompanyRepository productionCompanyRepository;
+	private CompanyRepository companyRepository;
 
 	public String processEntity(long companyId) {
 		String url = String.format("%s/3/company/%s?api_key=%s", tmdbApiUrl, companyId, apiKey);
@@ -29,21 +29,21 @@ public class CompanyImporter extends BaseImporter {
 	}
 
 	private Runnable handleDeleted(long personId) {
-		return () -> productionCompanyRepository.deleteByIdWithTransaction(personId);
+		return () -> companyRepository.deleteByIdWithTransaction(personId);
 	}
 
 	private Consumer<ProductionCompany> handleProcessed(long personId) {
 		return result -> {
-			productionCompanyRepository.findById(personId)
+			companyRepository.findById(personId)
 					.ifPresent(company -> {
 						company.processInfo(result);
-						productionCompanyRepository.saveAndFlush(company);
+						companyRepository.saveAndFlush(company);
 					});
 		};
 	}
 
 	@Override
 	public List<Long> findAllUnprocessed() {
-		return productionCompanyRepository.findAllUnprocessed();
+		return companyRepository.findAllUnprocessed();
 	}
 }

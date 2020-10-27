@@ -5,7 +5,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
+import se.david.moviesimporter.domain.entities.CompanyEntity;
 
 public class ProductionCompany {
 	private long id;
@@ -14,15 +14,13 @@ public class ProductionCompany {
 	private String name;
 	@JsonProperty("origin_country")
 	private String originCountry;
+	private String description;
+	private String headquarters;
+	private String homepage;
+	@JsonProperty("parent_company")
+	private String parentCompany;
 
 	public ProductionCompany() {
-	}
-
-	public ProductionCompany(long id, String logoPath, String name, String originCountry) {
-		this.id = id;
-		this.logoPath = logoPath;
-		this.name = name;
-		this.originCountry = originCountry;
 	}
 
 	public long getId() {
@@ -57,9 +55,36 @@ public class ProductionCompany {
 		this.originCountry = originCountry;
 	}
 
-	@JsonIgnore
-	public ProductionCompanyEntity createEntity() {
-		return new ProductionCompanyEntity(id, name, false);
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getHeadquarters() {
+		return headquarters;
+	}
+
+	public void setHeadquarters(String headquarters) {
+		this.headquarters = headquarters;
+	}
+
+	public String getHomepage() {
+		return homepage;
+	}
+
+	public void setHomepage(String homepage) {
+		this.homepage = homepage;
+	}
+
+	public String getParentCompany() {
+		return parentCompany;
+	}
+
+	public void setParentCompany(String parentCompany) {
+		this.parentCompany = parentCompany;
 	}
 
 	@Override

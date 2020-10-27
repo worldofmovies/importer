@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import se.david.moviesimporter.domain.entities.CollectionEntity;
-import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
 
 @Repository
 public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {

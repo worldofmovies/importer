@@ -9,11 +9,11 @@ import org.slf4j.Logger;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
+import se.david.moviesimporter.domain.tmdb.CollectionId;
 import se.david.moviesimporter.domain.tmdb.Keyword;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
-import se.david.moviesimporter.domain.tmdb.ProductionCompany;
+import se.david.moviesimporter.domain.tmdb.CompanyId;
 
 public final class JsonMapper {
 	private static final Logger log = getLogger(JsonMapper.class);
@@ -22,10 +22,10 @@ public final class JsonMapper {
 	private JsonMapper() {
 	}
 
-	public static Function<String, ProductionCompany> mapProductionCompany() {
+	public static Function<String, CompanyId> mapProductionCompany() {
 		return content -> {
 			try {
-				return objectMapper.readValue(content, ProductionCompany.class);
+				return objectMapper.readValue(content, CompanyId.class);
 			} catch (JsonProcessingException e) {
 				log.error("Error: {}", e.getMessage(), e);
 				return null;
@@ -66,10 +66,10 @@ public final class JsonMapper {
 		};
 	}
 
-	public static Function<String, BelongsToCollection> mapCollection() {
+	public static Function<String, CollectionId> mapCollection() {
 		return content -> {
 			try {
-				return objectMapper.readValue(content, BelongsToCollection.class);
+				return objectMapper.readValue(content, CollectionId.class);
 			} catch (JsonProcessingException e) {
 				log.error("Error: {}", e.getMessage(), e);
 				return null;

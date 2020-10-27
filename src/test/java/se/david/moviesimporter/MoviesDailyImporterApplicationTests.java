@@ -30,12 +30,12 @@ import se.david.moviesimporter.domain.entities.CollectionEntity;
 import se.david.moviesimporter.domain.entities.KeywordEntity;
 import se.david.moviesimporter.domain.entities.MovieEntity;
 import se.david.moviesimporter.domain.entities.PersonEntity;
-import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
+import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.repository.CollectionRepository;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
-import se.david.moviesimporter.repository.ProductionCompanyRepository;
+import se.david.moviesimporter.repository.CompanyRepository;
 
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -54,7 +54,7 @@ class MoviesDailyImporterApplicationTests {
 	@Autowired
 	private CollectionRepository collectionRepository;
 	@Autowired
-	private ProductionCompanyRepository productionCompanyRepository;
+	private CompanyRepository companyRepository;
 
 	@BeforeEach
 	public void setup() {
@@ -62,7 +62,7 @@ class MoviesDailyImporterApplicationTests {
 		keywordRepository.deleteAll();
 		movieRepository.deleteAll();
 		collectionRepository.deleteAll();
-		productionCompanyRepository.deleteAll();
+		companyRepository.deleteAll();
 	}
 
 	@Nested
@@ -79,7 +79,7 @@ class MoviesDailyImporterApplicationTests {
 					.expectStatus().is2xxSuccessful();
 
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
-			assertEquals(10, productionCompanyRepository.findAllUnprocessed().size());
+			assertEquals(10, companyRepository.findAllUnprocessed().size());
 		}
 
 		@Test
@@ -97,7 +97,7 @@ class MoviesDailyImporterApplicationTests {
 					.exchange()
 					.expectStatus().is2xxSuccessful();
 
-			assertEquals(10, productionCompanyRepository.findAllUnprocessed().size());
+			assertEquals(10, companyRepository.findAllUnprocessed().size());
 		}
 
 		@Test
@@ -221,7 +221,7 @@ class MoviesDailyImporterApplicationTests {
 			assertEquals(10, personRepository.findAllUnprocessed().size());
 			assertEquals(10, collectionRepository.findAllUnprocessed().size());
 			assertEquals(10, movieRepository.findAllUnprocessed().size());
-			assertEquals(10, productionCompanyRepository.findAllUnprocessed().size());
+			assertEquals(10, companyRepository.findAllUnprocessed().size());
 		}
 	}
 
@@ -282,7 +282,7 @@ class MoviesDailyImporterApplicationTests {
 
 		@Test
 		void importCompanies() throws IOException {
-			productionCompanyRepository.saveAndFlush(new ProductionCompanyEntity(378, "name", false));
+			companyRepository.saveAndFlush(new CompanyEntity(378, false));
 
 			ClassPathResource resource = new ClassPathResource("production_company.json");
 
@@ -317,7 +317,7 @@ class MoviesDailyImporterApplicationTests {
 			personRepository.saveAndFlush(new PersonEntity(1, false, "name", 0.0, false));
 			movieRepository.saveAndFlush(new MovieEntity(1, false, "name", 0.0, false, false));
 			keywordRepository.saveAndFlush(new KeywordEntity(378, "name", false));
-			productionCompanyRepository.saveAndFlush(new ProductionCompanyEntity(378, "name", false));
+			companyRepository.saveAndFlush(new CompanyEntity(378, false));
 			collectionRepository.saveAndFlush(new CollectionEntity(1, "name", false));
 
 			String personUrl = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,movie_credits,external_ids";

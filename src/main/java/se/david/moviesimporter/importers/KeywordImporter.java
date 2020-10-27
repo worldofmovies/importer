@@ -4,12 +4,17 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.david.moviesimporter.domain.entities.MovieEntity;
+import se.david.moviesimporter.domain.tmdb.KeywordData;
 import se.david.moviesimporter.repository.KeywordRepository;
+import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
@@ -19,34 +24,41 @@ public class KeywordImporter extends BaseImporter {
 
 	@Autowired
 	private KeywordRepository keywordRepository;
+	@Autowired
+	private MovieRepository movieRepository;
 
 	public String processEntity(long keywordId) {
 		int page = 1;
-		int processedPages = handlePagination(keywordId, page);
-		return String.format("Processed: %s pages for keyword: %s", processedPages, keywordId);
+		return handlePagination(keywordId, page)
+				.map(processedPages -> String.format("Processed: %s pages for keyword: %s", processedPages, keywordId))
+				.orElse("Failed to fetch keywordId: " + keywordId);
 	}
 
-	private Integer handlePagination(long keywordId, int page) {
+	private Optional<Integer> handlePagination(long keywordId, int page) {
 		String url = String.format(urlFormat, tmdbApiUrl, apiKey, page, keywordId);
 		try {
 			return RestTemplateFetcher.fetchKeyword(url)
 					.flatMap(result -> keywordRepository.findById(keywordId)
 							.map(keyword -> {
-								keyword.processInfo(result);
+								List<MovieEntity> movies = movieRepository.findAllById(result.getResults()
+										.stream()
+										.map(KeywordData.Result::getId)
+										.collect(Collectors.toList()));
+								keyword.processInfo(movies);
 								keywordRepository.saveAndFlush(keyword);
 								if (result.getPage() < result.getTotalPages()) {
 									return handlePagination(keywordId, result.getPage() + 1);
 								} else {
-									return result.getPage();
+									return Optional.of(result.getPage());
 								}
 							}))
 					.orElseGet(() -> {
 						keywordRepository.deleteByIdWithTransaction(keywordId);
-						return 0;
+						return Optional.of(0);
 					});
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			log.error("IOException calling url: {} with message: {}", url, e.getMessage(), e);
+			return Optional.empty();
 		}
 	}
 

@@ -10,18 +10,17 @@ import se.david.moviesimporter.domain.tmdb.ProductionCompany;
 
 @Entity(name = "ProductionCompany")
 @Table(name = "production_company")
-public class ProductionCompanyEntity {
+public class CompanyEntity {
 	@Id
 	private long id;
 	private String name;
 	private boolean processed;
 
-	public ProductionCompanyEntity() {
+	public CompanyEntity() {
 	}
 
-	public ProductionCompanyEntity(long id, String name, boolean processed) {
+	public CompanyEntity(long id, boolean processed) {
 		this.id = id;
-		this.name = name;
 		this.processed = processed;
 	}
 
@@ -57,7 +56,7 @@ public class ProductionCompanyEntity {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		ProductionCompanyEntity that = (ProductionCompanyEntity) o;
+		CompanyEntity that = (CompanyEntity) o;
 		return id == that.id;
 	}
 

@@ -14,7 +14,7 @@ public class Movie {
 	private boolean adult;
 	@JsonProperty("backdrop_path")
 	private String backdropPath;
-	private BelongsToCollection belongsToCollection;
+	private CollectionId belongsToCollection;
 	private Long budget;
 	private List<Genre> genres;
 	private String homepage;
@@ -29,7 +29,7 @@ public class Movie {
 	@JsonProperty("poster_path")
 	private String posterPath;
 	@JsonProperty("production_companies")
-	private List<ProductionCompany> productionCompanies;
+	private List<CompanyId> productionCompanies;
 	@JsonProperty("production_countries")
 	private List<ProductionCountry> productionCountries;
 	@JsonProperty("release_date")
@@ -57,8 +57,8 @@ public class Movie {
 	public Movie() {
 	}
 
-	public Movie(long id, boolean adult, String backdropPath, BelongsToCollection belongsToCollection, Long budget, List<Genre> genres, String homepage,
-			String imdbId, String originalLanguage, String originalTitle, String overview, Double popularity, String posterPath, List<ProductionCompany> productionCompanies,
+	public Movie(long id, boolean adult, String backdropPath, CollectionId belongsToCollection, Long budget, List<Genre> genres, String homepage,
+			String imdbId, String originalLanguage, String originalTitle, String overview, Double popularity, String posterPath, List<CompanyId> productionCompanies,
 			List<ProductionCountry> productionCountries, LocalDate releaseDate, Long revenue, Long runtime, List<SpokenLanguage> spokenLanguages, String status,
 			String tagline, String title, Boolean video, Double voteAverage, Integer voteCount, AlternativeTitles alternativeTitles, Keywords keywords,
 			ExternalIds externalIds, Images images, Credits credits) {
@@ -118,11 +118,11 @@ public class Movie {
 		this.backdropPath = backdropPath;
 	}
 
-	public BelongsToCollection getBelongsToCollection() {
+	public CollectionId getBelongsToCollection() {
 		return belongsToCollection;
 	}
 
-	public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
+	public void setBelongsToCollection(CollectionId belongsToCollection) {
 		this.belongsToCollection = belongsToCollection;
 	}
 
@@ -198,11 +198,11 @@ public class Movie {
 		this.posterPath = posterPath;
 	}
 
-	public List<ProductionCompany> getProductionCompanies() {
+	public List<CompanyId> getProductionCompanies() {
 		return productionCompanies;
 	}
 
-	public void setProductionCompanies(List<ProductionCompany> productionCompanies) {
+	public void setProductionCompanies(List<CompanyId> productionCompanies) {
 		this.productionCompanies = productionCompanies;
 	}
 

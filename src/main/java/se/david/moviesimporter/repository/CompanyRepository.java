@@ -9,12 +9,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import se.david.moviesimporter.domain.entities.ProductionCompanyEntity;
+import se.david.moviesimporter.domain.entities.CompanyEntity;
 
 @Repository
-public interface ProductionCompanyRepository extends JpaRepository<ProductionCompanyEntity, Long> {
+public interface CompanyRepository extends JpaRepository<CompanyEntity, Long> {
 	@Transactional
-	default List<ProductionCompanyEntity> saveAllWithTransaction(List<ProductionCompanyEntity> productionCompanies) {
+	default List<CompanyEntity> saveAllWithTransaction(List<CompanyEntity> productionCompanies) {
 		return saveAll(productionCompanies);
 	}
 

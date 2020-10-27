@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.david.moviesimporter.domain.tmdb.BelongsToCollection;
+import se.david.moviesimporter.domain.tmdb.CollectionData;
 import se.david.moviesimporter.repository.CollectionRepository;
 import se.david.moviesimporter.util.RestTemplateFetcher;
 
@@ -32,7 +32,7 @@ public class CollectionImporter extends BaseImporter {
 		return () -> collectionRepository.deleteByIdWithTransaction(personId);
 	}
 
-	private Consumer<BelongsToCollection> handleProcessed(long personId) {
+	private Consumer<CollectionData> handleProcessed(long personId) {
 		return result -> collectionRepository.findById(personId)
 				.ifPresent(collection -> {
 					collection.processInfo(result);

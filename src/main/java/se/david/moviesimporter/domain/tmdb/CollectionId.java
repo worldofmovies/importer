@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import se.david.moviesimporter.domain.entities.CollectionEntity;
 
-public class BelongsToCollection {
+public class CollectionId {
 	private long id;
 	private String name;
 	@JsonProperty("poster_path")
@@ -14,10 +14,10 @@ public class BelongsToCollection {
 	@JsonProperty("backdrop_path")
 	private String backdropPath;
 
-	public BelongsToCollection() {
+	public CollectionId() {
 	}
 
-	public BelongsToCollection(long id, String name, String posterPath, String backdropPath) {
+	public CollectionId(long id, String name, String posterPath, String backdropPath) {
 		this.id = id;
 		this.name = name;
 		this.posterPath = posterPath;
@@ -64,7 +64,7 @@ public class BelongsToCollection {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		BelongsToCollection that = (BelongsToCollection) o;
+		CollectionId that = (CollectionId) o;
 		return id == that.id;
 	}
 
@@ -83,7 +83,7 @@ public class BelongsToCollection {
 				'}';
 	}
 
-	public static CollectionEntity createEntity(BelongsToCollection belongsToCollection) {
+	public static CollectionEntity createEntity(CollectionId belongsToCollection) {
 		return new CollectionEntity(belongsToCollection.getId(), belongsToCollection.getName(), false);
 	}
 }
