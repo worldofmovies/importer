@@ -233,7 +233,7 @@ class MoviesDailyImporterApplicationTests {
 
 			ClassPathResource resource = new ClassPathResource("person.json");
 
-			String url = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,movie_credits,external_ids";
+			String url = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,external_ids";
 			stubEndpointForJson(resource, url);
 
 			webClient.get().uri("/import/person/unprocessed")
@@ -249,7 +249,7 @@ class MoviesDailyImporterApplicationTests {
 
 			ClassPathResource resource = new ClassPathResource("movie.json");
 
-			String url = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,keywords,external_ids,images,credits";
+			String url = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,external_ids,images,credits";
 			stubEndpointForJson(resource, url);
 
 			webClient.get().uri("/import/movie/unprocessed")
@@ -320,10 +320,10 @@ class MoviesDailyImporterApplicationTests {
 			companyRepository.saveAndFlush(new CompanyEntity(378, false));
 			collectionRepository.saveAndFlush(new CollectionEntity(1, "name", false));
 
-			String personUrl = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,movie_credits,external_ids";
+			String personUrl = "/3/person/1\\?api_key=.+&language=en-US&append_to_response=images,external_ids";
 			stubEndpointForJson(new ClassPathResource("person.json"), personUrl);
 
-			String movieUrl = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,keywords,external_ids,images,credits";
+			String movieUrl = "/3/movie/1\\?api_key=API_KEY&language=en-US&append_to_response=alternative_titles,external_ids,images,credits";
 			stubEndpointForJson(new ClassPathResource("movie.json"), movieUrl);
 
 			String keywordUrl = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_keywords=378";

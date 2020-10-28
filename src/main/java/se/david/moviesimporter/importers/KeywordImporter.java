@@ -30,8 +30,8 @@ public class KeywordImporter extends BaseImporter {
 	public String processEntity(long keywordId) {
 		int page = 1;
 		return handlePagination(keywordId, page)
-				.map(processedPages -> String.format("Processed: %s pages for keyword: %s", processedPages, keywordId))
-				.orElse("Failed to fetch keywordId: " + keywordId);
+				.map(processedPages -> String.format("Fetched keyword: %s pages: %s", keywordId, processedPages))
+				.orElse(String.format("Error fetching keyword: %s.", keywordId));
 	}
 
 	private Optional<Integer> handlePagination(long keywordId, int page) {

@@ -3,10 +3,12 @@ package se.david.moviesimporter.domain.tmdb;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import se.david.moviesimporter.domain.entities.CompanyEntity;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductionCompany {
 	private long id;
 	@JsonProperty("logo_path")
@@ -18,7 +20,7 @@ public class ProductionCompany {
 	private String headquarters;
 	private String homepage;
 	@JsonProperty("parent_company")
-	private String parentCompany;
+	private ProductionCompany parentCompany;
 
 	public ProductionCompany() {
 	}
@@ -79,11 +81,11 @@ public class ProductionCompany {
 		this.homepage = homepage;
 	}
 
-	public String getParentCompany() {
+	public ProductionCompany getParentCompany() {
 		return parentCompany;
 	}
 
-	public void setParentCompany(String parentCompany) {
+	public void setParentCompany(ProductionCompany parentCompany) {
 		this.parentCompany = parentCompany;
 	}
 
@@ -111,6 +113,10 @@ public class ProductionCompany {
 				", logoPath='" + logoPath + '\'' +
 				", name='" + name + '\'' +
 				", originCountry='" + originCountry + '\'' +
+				", description='" + description + '\'' +
+				", headquarters='" + headquarters + '\'' +
+				", homepage='" + homepage + '\'' +
+				", parentCompany=" + parentCompany +
 				'}';
 	}
 }

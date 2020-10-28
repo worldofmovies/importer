@@ -21,10 +21,10 @@ public class CompanyImporter extends BaseImporter {
 		try {
 			RestTemplateFetcher.fetchCompany(url)
 					.ifPresentOrElse(handleProcessed(companyId), handleDeleted(companyId));
-			return String.format("Processed company: %s", companyId);
+			return String.format("Fetched company: %s", companyId);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return String.format("Error fetching company: %s. %s", companyId, e.getMessage());
 		}
 	}
 

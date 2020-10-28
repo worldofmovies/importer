@@ -21,10 +21,10 @@ public class CollectionImporter extends BaseImporter {
 		try {
 			RestTemplateFetcher.fetchCollection(url)
 					.ifPresentOrElse(handleProcessed(collectionId), handleDeleted(collectionId));
-			return "Done";
+			return String.format("Fetched collection: %s", collectionId);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return String.format("Error fetching collection: %s. %s", collectionId, e.getMessage());
 		}
 	}
 

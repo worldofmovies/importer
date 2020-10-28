@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class Api {
+
 	@Autowired
 	private DailyImporter dailyImporter;
 	@Autowired
@@ -93,11 +94,11 @@ public class Api {
 
 	@GetMapping(path = "/import/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<String> fetchAllUnprocesseds() {
-		return fetchKeywords()
-				.concatWith(fetchCompanies())
-				.concatWith(fetchCollections())
-				.concatWith(fetchPersons())
-				.concatWith(fetchMovies())
+		return Flux.concat(fetchCompanies(),
+				fetchPersons(),
+				fetchMovies(),
+				fetchKeywords(),
+				fetchCollections())
 				.onBackpressureBuffer();
 	}
 }

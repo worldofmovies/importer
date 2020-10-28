@@ -28,8 +28,6 @@ public class Person {
 	@JsonProperty("also_known_as")
 	private List<String> alsoKnownAs;
 	private String biography;
-	@JsonProperty("movie_credits")
-	private Credits movieCredits;
 	private Integer gender;
 	private Boolean adult;
 	private Double popularity;
@@ -38,7 +36,7 @@ public class Person {
 	}
 
 	public Person(long id, LocalDate birthday, String knownForDepartment, String placeOfBirth, String homepage, String profilePath, String imdbId, LocalDate deathday, PersonImages images,
-			ExternalIds externalIds, String name, List<String> alsoKnownAs, String biography, Credits movieCredits, Integer gender, Boolean adult, Double popularity) {
+			ExternalIds externalIds, String name, List<String> alsoKnownAs, String biography, Integer gender, Boolean adult, Double popularity) {
 		this.id = id;
 		this.birthday = birthday;
 		this.knownForDepartment = knownForDepartment;
@@ -52,7 +50,6 @@ public class Person {
 		this.name = name;
 		this.alsoKnownAs = alsoKnownAs;
 		this.biography = biography;
-		this.movieCredits = movieCredits;
 		this.gender = gender;
 		this.adult = adult;
 		this.popularity = popularity;
@@ -162,14 +159,6 @@ public class Person {
 		this.biography = biography;
 	}
 
-	public Credits getMovieCredits() {
-		return movieCredits;
-	}
-
-	public void setMovieCredits(Credits movieCredits) {
-		this.movieCredits = movieCredits;
-	}
-
 	public Integer getGender() {
 		return gender;
 	}
@@ -216,7 +205,6 @@ public class Person {
 				Objects.equals(name, person.name) &&
 				Objects.equals(alsoKnownAs, person.alsoKnownAs) &&
 				Objects.equals(biography, person.biography) &&
-				Objects.equals(movieCredits, person.movieCredits) &&
 				Objects.equals(gender, person.gender) &&
 				Objects.equals(adult, person.adult) &&
 				Objects.equals(popularity, person.popularity);
@@ -224,7 +212,7 @@ public class Person {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, birthday, knownForDepartment, placeOfBirth, homepage, profilePath, imdbId, deathday, images, externalIds, name, alsoKnownAs, biography, movieCredits, gender, adult, popularity);
+		return Objects.hash(id, birthday, knownForDepartment, placeOfBirth, homepage, profilePath, imdbId, deathday, images, externalIds, name, alsoKnownAs, biography, gender, adult, popularity);
 	}
 
 	@Override
@@ -243,7 +231,6 @@ public class Person {
 				", name='" + name + '\'' +
 				", alsoKnownAs=" + alsoKnownAs +
 				", biography='" + biography + '\'' +
-				", movieCredits=" + movieCredits +
 				", gender=" + gender +
 				", adult=" + adult +
 				", popularity=" + popularity +

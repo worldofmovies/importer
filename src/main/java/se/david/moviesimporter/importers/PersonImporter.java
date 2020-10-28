@@ -17,14 +17,14 @@ public class PersonImporter extends BaseImporter {
 	private PersonRepository personRepository;
 
 	public String processEntity(long personId) {
-		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,movie_credits,external_ids", tmdbApiUrl, personId, apiKey);
+		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,external_ids", tmdbApiUrl, personId, apiKey);
 		try {
 			RestTemplateFetcher.fetchPerson(url)
 					.ifPresentOrElse(handleProcessedPerson(personId), handleDeletedPerson(personId));
-			return "Done";
+			return String.format("Fetched person: %s", personId);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return String.format("Error fetching person: %s. %s", personId, e.getMessage());
 		}
 	}
 

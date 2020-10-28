@@ -48,7 +48,6 @@ public class Movie {
 	private Integer voteCount;
 	@JsonProperty("alternative_titles")
 	private AlternativeTitles alternativeTitles;
-	private Keywords keywords;
 	@JsonProperty("external_ids")
 	private ExternalIds externalIds;
 	private Images images;
@@ -60,7 +59,7 @@ public class Movie {
 	public Movie(long id, boolean adult, String backdropPath, CollectionId belongsToCollection, Long budget, List<Genre> genres, String homepage,
 			String imdbId, String originalLanguage, String originalTitle, String overview, Double popularity, String posterPath, List<CompanyId> productionCompanies,
 			List<ProductionCountry> productionCountries, LocalDate releaseDate, Long revenue, Long runtime, List<SpokenLanguage> spokenLanguages, String status,
-			String tagline, String title, Boolean video, Double voteAverage, Integer voteCount, AlternativeTitles alternativeTitles, Keywords keywords,
+			String tagline, String title, Boolean video, Double voteAverage, Integer voteCount, AlternativeTitles alternativeTitles,
 			ExternalIds externalIds, Images images, Credits credits) {
 		this.id = id;
 		this.adult = adult;
@@ -88,7 +87,6 @@ public class Movie {
 		this.voteAverage = voteAverage;
 		this.voteCount = voteCount;
 		this.alternativeTitles = alternativeTitles;
-		this.keywords = keywords;
 		this.externalIds = externalIds;
 		this.images = images;
 		this.credits = credits;
@@ -300,14 +298,6 @@ public class Movie {
 
 	public void setAlternativeTitles(AlternativeTitles alternativeTitles) {
 		this.alternativeTitles = alternativeTitles;
-	}
-
-	public Keywords getKeywords() {
-		return keywords;
-	}
-
-	public void setKeywords(Keywords keywords) {
-		this.keywords = keywords;
 	}
 
 	public ExternalIds getExternalIds() {

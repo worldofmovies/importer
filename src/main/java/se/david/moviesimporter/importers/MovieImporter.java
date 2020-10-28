@@ -24,15 +24,15 @@ public class MovieImporter extends BaseImporter {
 	}
 
 	public String processEntity(long movieId) {
-		String additionals = "alternative_titles,keywords,external_ids,images,credits";
+		String additionals = "alternative_titles,external_ids,images,credits";
 		String url = String.format("%s/3/movie/%s?api_key=%s&language=en-US&append_to_response=%s", tmdbApiUrl, movieId, apiKey, additionals);
 		try {
 			RestTemplateFetcher.fetchMovie(url)
 					.ifPresentOrElse(handleProcessedMovie(movieId), handleDeletedMovie(movieId));
-			return "Done";
+			return String.format("Fetched movie: %s", movieId);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return String.format("Error fetching movie: %s. %s", movieId, e.getMessage());
 		}
 	}
 
