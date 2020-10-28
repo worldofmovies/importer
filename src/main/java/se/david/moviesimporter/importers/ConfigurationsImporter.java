@@ -2,7 +2,13 @@ package se.david.moviesimporter.importers;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+import se.david.moviesimporter.domain.entities.CountryEntity;
+import se.david.moviesimporter.domain.entities.LanguageEntity;
 import se.david.moviesimporter.domain.tmdb.CountryData;
 import se.david.moviesimporter.domain.tmdb.GenreData;
 import se.david.moviesimporter.domain.tmdb.LanguageData;
@@ -35,38 +42,55 @@ public class ConfigurationsImporter {
 
 	public Flux<String> importAllConfigurations() {
 		return Flux.concat(
-				Mono.fromCallable(this::importCountries),
-				Mono.fromCallable(this::importLanguages),
-				Mono.fromCallable(this::importGenres))
-				.parallel(3)
-				.runOn(Schedulers.elastic())
-				.sequential();
+				doCoolStuff(),
+				Mono.fromCallable(this::importGenres));
 	}
 
-	private String importCountries() {
-		String url = String.format("%s/3/configuration/countries?api_key=%s", tmdbApiUrl, apiKey);
-		try {
-			RestTemplateFetcher.fetch(url, CountryData[].class)
-					.ifPresent(countries -> countryRepository.saveAll(Arrays.stream(countries)
-							.map(CountryData::createEntity)
-							.collect(Collectors.toList())));
-			return "Done importing countries";
-		} catch (IOException e) {
-			return String.format("Error importing countries: %s", e.getMessage());
-		}
-	}
+	private Mono<String> doCoolStuff() {
+		Map<String, List<String>> countryLanguageMap = Arrays.stream(Locale.getAvailableLocales())
+				.collect(Collectors.groupingBy(Locale::getCountry, Collectors.mapping(Locale::getLanguage, Collectors.toList())));
 
-	private String importLanguages() {
-		String url = String.format("%s/3/configuration/languages?api_key=%s", tmdbApiUrl, apiKey);
-		try {
-			RestTemplateFetcher.fetch(url, LanguageData[].class)
-					.ifPresent(countries -> languageRepository.saveAll(Arrays.stream(countries)
+		return Mono.zip(importCountries(), importLanguages())
+				.map(tuple -> {
+					List<CountryData> countries = tuple.getT1();
+					List<LanguageData> languages = tuple.getT2();
+
+					Map<String, LanguageEntity> persistedLanguages = languageRepository.saveAll(languages.stream()
 							.map(LanguageData::createEntity)
-							.collect(Collectors.toList())));
-			return "Done importing languages";
-		} catch (IOException e) {
-			return String.format("Error importing languages: %s", e.getMessage());
-		}
+							.collect(Collectors.toList()))
+							.stream()
+							.collect(Collectors.toMap(LanguageEntity::getIso_639_1, entity -> entity));
+
+					List<CountryEntity> countryEntities = countries.stream()
+							.map(country -> {
+								List<LanguageEntity> languageCodes = Optional.ofNullable(countryLanguageMap.get(country.getIso_3166_1()))
+										.map(languageCode -> languageCode
+												.stream()
+												.map(persistedLanguages::get)
+												.collect(Collectors.toList()))
+										.orElse(Collections.emptyList());
+								return country.createEntity(languageCodes);
+							})
+							.collect(Collectors.toList());
+
+					countryRepository.saveAll(countryEntities);
+
+					return "DONE";
+				});
+	}
+
+	private Mono<List<CountryData>> importCountries() {
+		String url = String.format("%s/3/configuration/countries?api_key=%s", tmdbApiUrl, apiKey);
+		return Mono.fromCallable(() -> RestTemplateFetcher.fetch(url, CountryData[].class))
+				.map(a -> a.map(b -> Stream.of(b).collect(Collectors.toList()))
+						.orElse(Collections.emptyList()));
+	}
+
+	private Mono<List<LanguageData>> importLanguages() {
+		String url = String.format("%s/3/configuration/languages?api_key=%s", tmdbApiUrl, apiKey);
+		return Mono.fromCallable(() -> RestTemplateFetcher.fetch(url, LanguageData[].class))
+				.map(a -> a.map(b -> Stream.of(b).collect(Collectors.toList()))
+						.orElse(Collections.emptyList()));
 	}
 
 	private String importGenres() {

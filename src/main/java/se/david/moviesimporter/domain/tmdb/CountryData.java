@@ -1,10 +1,12 @@
 package se.david.moviesimporter.domain.tmdb;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import se.david.moviesimporter.domain.entities.CountryEntity;
+import se.david.moviesimporter.domain.entities.LanguageEntity;
 
 public class CountryData {
 	@JsonProperty("iso_3166_1")
@@ -61,7 +63,7 @@ public class CountryData {
 				'}';
 	}
 
-	public CountryEntity createEntity() {
+	public CountryEntity createEntity(List<LanguageEntity> languages) {
 		return new CountryEntity(iso_3166_1, englishName);
 	}
 }

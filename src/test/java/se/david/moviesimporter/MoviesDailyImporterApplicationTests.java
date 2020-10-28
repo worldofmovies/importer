@@ -245,7 +245,7 @@ class MoviesDailyImporterApplicationTests {
 					.block();
 
 			assertNotNull(result);
-			assertEquals(3, result.size());;
+			assertEquals(2, result.size());;
 
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(countriesUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(languagesUrl)));

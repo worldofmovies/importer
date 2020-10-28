@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +25,7 @@ public class PersonRepositoryTest {
 
 	@Test
 	public void asd() {
+		Stream.of(Locale.getAvailableLocales()).forEach(a -> System.out.println(a.getCountry() + ":" + a.getLanguage()));
 		PersonEntity personEntity = new PersonEntity(1, false, "name", 0.0, false);
 		personRepository.saveAndFlush(personEntity);
 
