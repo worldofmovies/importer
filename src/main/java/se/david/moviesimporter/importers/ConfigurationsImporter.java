@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import se.david.moviesimporter.domain.entities.CountryEntity;
 import se.david.moviesimporter.domain.entities.LanguageEntity;
 import se.david.moviesimporter.domain.tmdb.CountryData;
@@ -83,14 +84,16 @@ public class ConfigurationsImporter {
 		String url = String.format("%s/3/configuration/countries?api_key=%s", tmdbApiUrl, apiKey);
 		return Mono.fromCallable(() -> RestTemplateFetcher.fetch(url, CountryData[].class))
 				.map(a -> a.map(b -> Stream.of(b).collect(Collectors.toList()))
-						.orElse(Collections.emptyList()));
+						.orElse(Collections.emptyList()))
+				.subscribeOn(Schedulers.elastic());
 	}
 
 	private Mono<List<LanguageData>> importLanguages() {
 		String url = String.format("%s/3/configuration/languages?api_key=%s", tmdbApiUrl, apiKey);
 		return Mono.fromCallable(() -> RestTemplateFetcher.fetch(url, LanguageData[].class))
 				.map(a -> a.map(b -> Stream.of(b).collect(Collectors.toList()))
-						.orElse(Collections.emptyList()));
+						.orElse(Collections.emptyList()))
+				.subscribeOn(Schedulers.elastic());
 	}
 
 	private String importGenres() {

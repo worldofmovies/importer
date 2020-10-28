@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -27,11 +28,14 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 
 import se.david.moviesimporter.domain.entities.CollectionEntity;
+import se.david.moviesimporter.domain.entities.CountryEntity;
 import se.david.moviesimporter.domain.entities.KeywordEntity;
 import se.david.moviesimporter.domain.entities.MovieEntity;
 import se.david.moviesimporter.domain.entities.PersonEntity;
 import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.repository.CollectionRepository;
+import se.david.moviesimporter.repository.CountryRepository;
+import se.david.moviesimporter.repository.GenreRepository;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
@@ -55,6 +59,10 @@ class MoviesDailyImporterApplicationTests {
 	private CollectionRepository collectionRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+	@Autowired
+	private CountryRepository countryRepository;
+	@Autowired
+	private GenreRepository genreRepository;
 
 	@BeforeEach
 	public void setup() {
@@ -250,6 +258,14 @@ class MoviesDailyImporterApplicationTests {
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(countriesUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(languagesUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(genresUrl)));
+
+			assertEquals("Action", genreRepository.findById(28L)
+					.orElseThrow(() -> new AssertionFailedError("Genre must exist"))
+					.getName());
+			CountryEntity sweden = countryRepository.findById("SE")
+					.orElseThrow(() -> new AssertionFailedError("Sweden must exist"));
+			assertEquals("Sweden", sweden.getEnglishName());
+			assertEquals("sv", sweden.getLanguages().get(0).getIso_639_1());
 		}
 	}
 

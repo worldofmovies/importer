@@ -64,6 +64,6 @@ public class CountryData {
 	}
 
 	public CountryEntity createEntity(List<LanguageEntity> languages) {
-		return new CountryEntity(iso_3166_1, englishName);
+		return new CountryEntity(iso_3166_1, englishName, languages);
 	}
 }

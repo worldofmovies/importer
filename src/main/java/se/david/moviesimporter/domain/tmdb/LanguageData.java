@@ -1,5 +1,6 @@
 package se.david.moviesimporter.domain.tmdb;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -80,6 +81,6 @@ public class LanguageData {
 	}
 
 	public LanguageEntity createEntity() {
-		return new LanguageEntity(iso_639_1, englishName, name);
+		return new LanguageEntity(iso_639_1, englishName, name, Collections.emptyList());
 	}
 }

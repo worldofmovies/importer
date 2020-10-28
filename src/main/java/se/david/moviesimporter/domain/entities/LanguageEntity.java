@@ -1,10 +1,13 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity(name = "Language")
@@ -17,13 +20,17 @@ public class LanguageEntity {
 	private String englishName;
 	private String name;
 
+	@ManyToMany(targetEntity = CountryEntity.class, mappedBy = "languages")
+	private List<CountryEntity> countries = new ArrayList<>();
+
 	public LanguageEntity() {
 	}
 
-	public LanguageEntity(String iso_639_1, String englishName, String name) {
+	public LanguageEntity(String iso_639_1, String englishName, String name, List<CountryEntity> countries) {
 		this.iso_639_1 = iso_639_1;
 		this.englishName = englishName;
 		this.name = name;
+		this.countries = countries;
 	}
 
 	public String getIso_639_1() {
@@ -50,6 +57,14 @@ public class LanguageEntity {
 		this.name = name;
 	}
 
+	public List<CountryEntity> getCountries() {
+		return countries;
+	}
+
+	public void setCountries(List<CountryEntity> countries) {
+		this.countries = countries;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -73,6 +88,7 @@ public class LanguageEntity {
 				"iso_639_1='" + iso_639_1 + '\'' +
 				", englishName='" + englishName + '\'' +
 				", name='" + name + '\'' +
+				", countries=" + countries +
 				'}';
 	}
 }

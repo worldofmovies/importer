@@ -1,5 +1,6 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,8 +33,7 @@ public class MovieEntity {
 	private boolean processed;
 
 	@ManyToMany(targetEntity = KeywordEntity.class, mappedBy = "movies")
-	private List<KeywordEntity> keywords;
-
+	private List<KeywordEntity> keywords = new ArrayList<>();
 
 	public MovieEntity() {
 	}
