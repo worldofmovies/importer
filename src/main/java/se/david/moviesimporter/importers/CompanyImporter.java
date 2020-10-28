@@ -19,7 +19,7 @@ public class CompanyImporter extends BaseImporter {
 	public String processEntity(long companyId) {
 		String url = String.format("%s/3/company/%s?api_key=%s", tmdbApiUrl, companyId, apiKey);
 		try {
-			RestTemplateFetcher.fetchCompany(url)
+			RestTemplateFetcher.fetch(url, ProductionCompany.class)
 					.ifPresentOrElse(handleProcessed(companyId), handleDeleted(companyId));
 			return String.format("Fetched company: %s", companyId);
 		} catch (IOException e) {

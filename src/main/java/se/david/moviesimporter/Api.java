@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
+import se.david.moviesimporter.importers.ConfigurationsImporter;
 
 @RestController
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -16,6 +18,8 @@ public class Api {
 	private DailyImporter dailyImporter;
 	@Autowired
 	private Importer importer;
+	@Autowired
+	private ConfigurationsImporter configurationsImporter;
 
 	@GetMapping(path = "/import/company/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<String> dailyFileOnCompanies() {
@@ -42,10 +46,16 @@ public class Api {
 		return dailyImporter.getCollectionIds();
 	}
 
+	@GetMapping(path = "/import/configurations", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	Flux<String> importConfigurations() {
+		return configurationsImporter.importAllConfigurations();
+	}
+
 	@GetMapping(path = "/import/person/unprocessed", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<String> fetchPersons() {
 		return Flux.fromIterable(importer.findUnprocessedPersons())
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(id -> importer.importPerson(id))
 				.sequential();
 	}
@@ -54,6 +64,7 @@ public class Api {
 	Flux<String> fetchMovies() {
 		return Flux.fromIterable(importer.findUnprocessedMovies())
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(id -> importer.importMovie(id))
 				.sequential();
 	}
@@ -62,6 +73,7 @@ public class Api {
 	Flux<String> fetchKeywords() {
 		return Flux.fromIterable(importer.findUnprocessedKeywords())
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(id -> importer.importKeywords(id))
 				.sequential();
 	}
@@ -70,6 +82,7 @@ public class Api {
 	Flux<String> fetchCollections() {
 		return Flux.fromIterable(importer.findUnprocessedCollections())
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(id -> importer.importCollection(id))
 				.sequential();
 	}
@@ -78,6 +91,7 @@ public class Api {
 	Flux<String> fetchCompanies() {
 		return Flux.fromIterable(importer.findUnprocessedCompanies())
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(id -> importer.importCompany(id))
 				.sequential();
 	}

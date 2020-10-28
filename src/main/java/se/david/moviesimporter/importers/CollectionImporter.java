@@ -19,7 +19,7 @@ public class CollectionImporter extends BaseImporter {
 	public String processEntity(long collectionId) {
 		String url = String.format("%s/3/collection/%s?api_key=%s&language=en-US", tmdbApiUrl, collectionId, apiKey);
 		try {
-			RestTemplateFetcher.fetchCollection(url)
+			RestTemplateFetcher.fetch(url, CollectionData.class)
 					.ifPresentOrElse(handleProcessed(collectionId), handleDeleted(collectionId));
 			return String.format("Fetched collection: %s", collectionId);
 		} catch (IOException e) {

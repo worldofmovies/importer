@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import se.david.moviesimporter.domain.entities.CollectionEntity;
 import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.domain.entities.KeywordEntity;
@@ -84,6 +85,7 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(companyDataList -> {
 					List<CompanyEntity> found = companyRepository.findAllById(companyDataList.stream()
 							.map(CompanyId::getId)
@@ -116,6 +118,7 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(keywordDataList -> {
 					List<KeywordEntity> found = keywordRepository.findAllById(keywordDataList.stream()
 							.map(KeywordId::getId)
@@ -149,6 +152,7 @@ public class DailyImporter {
 				.filter(person -> !person.getAdult())
 				.buffer(buffer)
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(personDataList -> {
 					List<PersonEntity> found = personRepository.findAllById(personDataList.stream()
 							.map(Person::getId)
@@ -182,6 +186,7 @@ public class DailyImporter {
 				.filter(movie -> !movie.isAdult())
 				.buffer(buffer)
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(movieDataList -> {
 					List<MovieEntity> found = movieRepository.findAllById(movieDataList.stream()
 							.map(Movie::getId)
@@ -214,6 +219,7 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
+				.runOn(Schedulers.elastic())
 				.map(collectionDataList -> {
 					List<CollectionEntity> found = collectionRepository.findAllById(collectionDataList.stream()
 							.map(CollectionId::getId)

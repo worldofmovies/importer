@@ -19,7 +19,7 @@ public class PersonImporter extends BaseImporter {
 	public String processEntity(long personId) {
 		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,external_ids", tmdbApiUrl, personId, apiKey);
 		try {
-			RestTemplateFetcher.fetchPerson(url)
+			RestTemplateFetcher.fetch(url, Person.class)
 					.ifPresentOrElse(handleProcessedPerson(personId), handleDeletedPerson(personId));
 			return String.format("Fetched person: %s", personId);
 		} catch (IOException e) {

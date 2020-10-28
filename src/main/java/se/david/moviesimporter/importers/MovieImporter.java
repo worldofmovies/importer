@@ -27,7 +27,7 @@ public class MovieImporter extends BaseImporter {
 		String additionals = "alternative_titles,external_ids,images,credits";
 		String url = String.format("%s/3/movie/%s?api_key=%s&language=en-US&append_to_response=%s", tmdbApiUrl, movieId, apiKey, additionals);
 		try {
-			RestTemplateFetcher.fetchMovie(url)
+			RestTemplateFetcher.fetch(url, Movie.class)
 					.ifPresentOrElse(handleProcessedMovie(movieId), handleDeletedMovie(movieId));
 			return String.format("Fetched movie: %s", movieId);
 		} catch (IOException e) {

@@ -37,7 +37,7 @@ public class KeywordImporter extends BaseImporter {
 	private Optional<Integer> handlePagination(long keywordId, int page) {
 		String url = String.format(urlFormat, tmdbApiUrl, apiKey, page, keywordId);
 		try {
-			return RestTemplateFetcher.fetchKeyword(url)
+			return RestTemplateFetcher.fetch(url, KeywordData.class)
 					.flatMap(result -> keywordRepository.findById(keywordId)
 							.map(keyword -> {
 								List<MovieEntity> movies = movieRepository.findAllById(result.getResults()

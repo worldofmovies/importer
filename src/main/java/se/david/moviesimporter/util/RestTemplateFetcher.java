@@ -16,12 +16,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 
-import se.david.moviesimporter.domain.tmdb.CollectionData;
-import se.david.moviesimporter.domain.tmdb.KeywordData;
-import se.david.moviesimporter.domain.tmdb.Movie;
-import se.david.moviesimporter.domain.tmdb.Person;
-import se.david.moviesimporter.domain.tmdb.ProductionCompany;
-
 public final class RestTemplateFetcher {
 	private static final Logger log = getLogger(RestTemplateFetcher.class);
 
@@ -39,29 +33,9 @@ public final class RestTemplateFetcher {
 		});
 	}
 
-	public static Optional<Movie> fetchMovie(String url) throws IOException {
-		return fetch(url, new Movie());
-	}
-
-	public static Optional<KeywordData> fetchKeyword(String url) throws IOException {
-		return fetch(url, new KeywordData());
-	}
-
-	public static Optional<Person> fetchPerson(String url) throws IOException {
-		return fetch(url, new Person());
-	}
-
-	public static Optional<CollectionData> fetchCollection(String url) throws IOException {
-		return fetch(url, new CollectionData());
-	}
-
-	public static Optional<ProductionCompany> fetchCompany(String url) throws IOException {
-		return fetch(url, new ProductionCompany());
-	}
-
-	public static <T> Optional<T> fetch(String url, T t) throws IOException {
+	public static <T> Optional<T> fetch(String url, Class<T> t) throws IOException {
 		try {
-			ResponseEntity<T> response = restTemplate.getForEntity(url, (Class<T>) t.getClass());
+			ResponseEntity<T> response = restTemplate.getForEntity(url, t);
 			if (response.getStatusCode().is2xxSuccessful() && response.hasBody()) {
 				return Optional.ofNullable(response.getBody());
 			} else if (response.getStatusCode() == HttpStatus.NOT_FOUND) {

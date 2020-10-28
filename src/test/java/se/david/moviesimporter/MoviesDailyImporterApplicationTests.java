@@ -226,6 +226,34 @@ class MoviesDailyImporterApplicationTests {
 	}
 
 	@Nested
+	public class ConfigurationImports {
+		@Test
+		public void importConfigs() throws IOException {
+			String countriesUrl = "/3/configuration/countries\\?api_key=API_KEY";
+			stubEndpointForJson(new ClassPathResource("countries.json"), countriesUrl);
+			String languagesUrl = "/3/configuration/languages\\?api_key=API_KEY";
+			stubEndpointForJson(new ClassPathResource("languages.json"), languagesUrl);
+			String genresUrl = "/3/genre/movie/list\\?api_key=API_KEY&language=en-US";
+			stubEndpointForJson(new ClassPathResource("genres.json"), genresUrl);
+
+			List<String> result = webClient.get().uri("/import/configurations")
+					.exchange()
+					.expectStatus().is2xxSuccessful()
+					.returnResult(String.class)
+					.getResponseBody()
+					.collectList()
+					.block();
+
+			assertNotNull(result);
+			assertEquals(3, result.size());;
+
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(countriesUrl)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(languagesUrl)));
+			verify(WireMock.getRequestedFor(WireMock.urlMatching(genresUrl)));
+		}
+	}
+
+	@Nested
 	public class UnprocessedImports {
 		@Test
 		void importPersons() throws IOException {
