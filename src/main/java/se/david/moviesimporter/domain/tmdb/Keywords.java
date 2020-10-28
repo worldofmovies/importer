@@ -4,20 +4,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class Keywords {
-	private List<Keyword> keywords;
+	private List<KeywordId> keywords;
 
 	public Keywords() {
 	}
 
-	public Keywords(List<Keyword> keywords) {
+	public Keywords(List<KeywordId> keywords) {
 		this.keywords = keywords;
 	}
 
-	public List<Keyword> getKeywords() {
+	public List<KeywordId> getKeywords() {
 		return keywords;
 	}
 
-	public void setKeywords(List<Keyword> keywords) {
+	public void setKeywords(List<KeywordId> keywords) {
 		this.keywords = keywords;
 	}
 

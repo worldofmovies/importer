@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import se.david.moviesimporter.domain.entities.KeywordEntity;
 
-public class Keyword {
+public class KeywordId {
 	private long id;
 	private String name;
 
-	public Keyword() {
+	public KeywordId() {
 	}
 
-	public Keyword(long id, String name) {
+	public KeywordId(long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -47,7 +47,7 @@ public class Keyword {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Keyword keyword = (Keyword) o;
+		KeywordId keyword = (KeywordId) o;
 		return id == keyword.id;
 	}
 

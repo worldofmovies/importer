@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import se.david.moviesimporter.domain.tmdb.CollectionId;
-import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.KeywordId;
 import se.david.moviesimporter.domain.tmdb.Movie;
 import se.david.moviesimporter.domain.tmdb.Person;
 import se.david.moviesimporter.domain.tmdb.CompanyId;
@@ -55,10 +55,10 @@ public final class JsonMapper {
 		};
 	}
 
-	public static Function<String, Keyword> mapKeyword() {
+	public static Function<String, KeywordId> mapKeyword() {
 		return content -> {
 			try {
-				return objectMapper.readValue(content, Keyword.class);
+				return objectMapper.readValue(content, KeywordId.class);
 			} catch (JsonProcessingException e) {
 				log.error("Error: {}", e.getMessage(), e);
 				return null;

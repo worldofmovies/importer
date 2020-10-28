@@ -3,7 +3,6 @@ package se.david.moviesimporter.domain.entities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,9 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-
-import se.david.moviesimporter.domain.tmdb.Keyword;
-import se.david.moviesimporter.domain.tmdb.KeywordData;
 
 /**
  * {"id":378,"name":"prison"}

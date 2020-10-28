@@ -24,7 +24,7 @@ import se.david.moviesimporter.domain.entities.PersonEntity;
 import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.domain.tmdb.CollectionId;
 import se.david.moviesimporter.domain.tmdb.Movie;
-import se.david.moviesimporter.domain.tmdb.Keyword;
+import se.david.moviesimporter.domain.tmdb.KeywordId;
 import se.david.moviesimporter.domain.tmdb.Person;
 import se.david.moviesimporter.domain.tmdb.CompanyId;
 import se.david.moviesimporter.repository.CollectionRepository;
@@ -84,9 +84,11 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
-				.map(a -> {
-					List<CompanyEntity> found = companyRepository.findAllById(a.stream().map(CompanyId::getId).collect(Collectors.toList()));
-					return a.stream()
+				.map(companyDataList -> {
+					List<CompanyEntity> found = companyRepository.findAllById(companyDataList.stream()
+							.map(CompanyId::getId)
+							.collect(Collectors.toList()));
+					return companyDataList.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
 							.map(CompanyId::createEntity)
 							.collect(Collectors.toList());
@@ -114,11 +116,13 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
-				.map(a -> {
-					List<KeywordEntity> ad = keywordRepository.findAllById(a.stream().map(Keyword::getId).collect(Collectors.toList()));
-					return a.stream()
-							.filter(b -> ad.stream().noneMatch(c -> c.getId() == b.getId()))
-							.map(Keyword::createEntity)
+				.map(keywordDataList -> {
+					List<KeywordEntity> found = keywordRepository.findAllById(keywordDataList.stream()
+							.map(KeywordId::getId)
+							.collect(Collectors.toList()));
+					return keywordDataList.stream()
+							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
+							.map(KeywordId::createEntity)
 							.collect(Collectors.toList());
 				})
 				.map(keywordRepository::saveAllWithTransaction)
@@ -145,9 +149,11 @@ public class DailyImporter {
 				.filter(person -> !person.getAdult())
 				.buffer(buffer)
 				.parallel(5)
-				.map(a -> {
-					List<PersonEntity> found = personRepository.findAllById(a.stream().map(Person::getId).collect(Collectors.toList()));
-					return a.stream()
+				.map(personDataList -> {
+					List<PersonEntity> found = personRepository.findAllById(personDataList.stream()
+							.map(Person::getId)
+							.collect(Collectors.toList()));
+					return personDataList.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
 							.map(Person::createEntity)
 							.collect(Collectors.toList());
@@ -176,9 +182,11 @@ public class DailyImporter {
 				.filter(movie -> !movie.isAdult())
 				.buffer(buffer)
 				.parallel(5)
-				.map(a -> {
-					List<MovieEntity> found = movieRepository.findAllById(a.stream().map(Movie::getId).collect(Collectors.toList()));
-					return a.stream()
+				.map(movieDataList -> {
+					List<MovieEntity> found = movieRepository.findAllById(movieDataList.stream()
+							.map(Movie::getId)
+							.collect(Collectors.toList()));
+					return movieDataList.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
 							.map(Movie::createEntity)
 							.collect(Collectors.toList());
@@ -206,17 +214,19 @@ public class DailyImporter {
 				.filter(Objects::nonNull)
 				.buffer(buffer)
 				.parallel(5)
-				.map(a -> {
-					List<CollectionEntity> found = collectionRepository.findAllById(a.stream().map(CollectionId::getId).collect(Collectors.toList()));
-					return a.stream()
+				.map(collectionDataList -> {
+					List<CollectionEntity> found = collectionRepository.findAllById(collectionDataList.stream()
+							.map(CollectionId::getId)
+							.collect(Collectors.toList()));
+					return collectionDataList.stream()
 							.filter(b -> found.stream().noneMatch(c -> c.getId() == b.getId()))
 							.map(CollectionId::createEntity)
 							.collect(Collectors.toList());
 				})
 				.map(collections -> Flux.fromIterable(collectionRepository.saveAllWithTransaction(collections)))
+				.sequential()
 				.filter(a -> counter.addAndGet(buffer) % 1000 == 0)
 				.map(movie -> String.format("Processed: %s", counter.get()))
-				.doOnNext(a -> log.info("Processed: {} collections", counter.get()))
-				.sequential();
+				.doOnNext(a -> log.info("Processed: {} collections", counter.get()));
 	}
 }
