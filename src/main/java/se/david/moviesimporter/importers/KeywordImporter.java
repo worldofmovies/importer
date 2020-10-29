@@ -22,10 +22,13 @@ public class KeywordImporter extends BaseImporter {
 	private static final String urlFormat = "%s/3/discover/movie?api_key=%s&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=%s&with_keywords=%s";
 	private static final Logger log = getLogger(KeywordImporter.class);
 
-	@Autowired
-	private KeywordRepository keywordRepository;
-	@Autowired
-	private MovieRepository movieRepository;
+	private final KeywordRepository keywordRepository;
+	private final MovieRepository movieRepository;
+
+	public KeywordImporter(KeywordRepository keywordRepository, MovieRepository movieRepository) {
+		this.keywordRepository = keywordRepository;
+		this.movieRepository = movieRepository;
+	}
 
 	public String processEntity(long keywordId) {
 		int page = 1;

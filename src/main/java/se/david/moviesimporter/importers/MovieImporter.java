@@ -13,10 +13,10 @@ import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class MovieImporter extends BaseImporter {
-	@Autowired
-	private MovieRepository movieRepository;
+	private final MovieRepository movieRepository;
 
-	public MovieImporter() {
+	public MovieImporter(MovieRepository movieRepository) {
+		this.movieRepository = movieRepository;
 	}
 
 	public List<Long> findAllUnprocessed() {

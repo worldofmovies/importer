@@ -13,8 +13,11 @@ import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class CollectionImporter extends BaseImporter {
-	@Autowired
-	private CollectionRepository collectionRepository;
+	private final CollectionRepository collectionRepository;
+
+	public CollectionImporter(CollectionRepository collectionRepository) {
+		this.collectionRepository = collectionRepository;
+	}
 
 	public String processEntity(long collectionId) {
 		String url = String.format("%s/3/collection/%s?api_key=%s&language=en-US", tmdbApiUrl, collectionId, apiKey);

@@ -88,27 +88,7 @@ public class KeywordData {
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Result {
-		/**
-		 * private double popularity;
-		 *
-		 * @JsonProperty("vote_count") private int voteCount;
-		 * private boolean video;
-		 * @JsonProperty("poster_path") private String posterPath;
-		 **/
 		private long id;
-
-		/**
-		 * private boolean adult;
-		 *
-		 * @JsonProperty("backdrop_path") private String backdropPath;
-		 * @JsonProperty("original_language") private String originalLanguage;
-		 * @JsonProperty("original_title") private String originalTitle;
-		 * @JsonProperty("genre_ids") private List<Long> genreIds;
-		 * private String title;
-		 * @JsonProperty("vote_average") private double voteAverage;
-		 * private String overView;
-		 * @JsonProperty("release_date") private LocalDate releaseDate;
-		 **/
 
 		public Result() {
 		}

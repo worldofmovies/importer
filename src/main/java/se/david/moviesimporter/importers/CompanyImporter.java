@@ -13,8 +13,11 @@ import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class CompanyImporter extends BaseImporter {
-	@Autowired
-	private CompanyRepository companyRepository;
+	private final CompanyRepository companyRepository;
+
+	public CompanyImporter(CompanyRepository companyRepository) {
+		this.companyRepository = companyRepository;
+	}
 
 	public String processEntity(long companyId) {
 		String url = String.format("%s/3/company/%s?api_key=%s", tmdbApiUrl, companyId, apiKey);
@@ -33,13 +36,11 @@ public class CompanyImporter extends BaseImporter {
 	}
 
 	private Consumer<ProductionCompany> handleProcessed(long personId) {
-		return result -> {
-			companyRepository.findById(personId)
-					.ifPresent(company -> {
-						company.processInfo(result);
-						companyRepository.saveAndFlush(company);
-					});
-		};
+		return result -> companyRepository.findById(personId)
+				.ifPresent(company -> {
+					company.processInfo(result);
+					companyRepository.saveAndFlush(company);
+				});
 	}
 
 	@Override

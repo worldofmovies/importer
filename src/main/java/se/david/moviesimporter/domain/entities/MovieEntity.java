@@ -7,6 +7,8 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -34,6 +36,12 @@ public class MovieEntity {
 
 	@ManyToMany(targetEntity = KeywordEntity.class, mappedBy = "movies")
 	private List<KeywordEntity> keywords = new ArrayList<>();
+
+	@ManyToMany(targetEntity = GenreEntity.class)
+	@JoinTable(name = "movie_genre",
+			joinColumns = { @JoinColumn(name = "fk_movie") },
+			inverseJoinColumns = { @JoinColumn(name = "fk_genre") })
+	private List<GenreEntity> genres = new ArrayList<>();
 
 	public MovieEntity() {
 	}
@@ -103,6 +111,14 @@ public class MovieEntity {
 		this.keywords = keywords;
 	}
 
+	public List<GenreEntity> getGenres() {
+		return genres;
+	}
+
+	public void setGenres(List<GenreEntity> genres) {
+		this.genres = genres;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -135,5 +151,12 @@ public class MovieEntity {
 		this.originalTitle = movie.getOriginalTitle();
 		this.popularity = movie.getPopularity();
 		this.processed = true;
+	}
+
+	public void processGenres(List<GenreEntity> genres) {
+		genres.forEach(genre -> {
+			genre.getMovies().add(this);
+			this.genres.add(genre);
+		});
 	}
 }

@@ -47,6 +47,7 @@ import se.david.moviesimporter.repository.CompanyRepository;
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWireMock(port = 9999)
 class MoviesDailyImporterApplicationTests {
+	@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 	@Autowired
 	private WebTestClient webClient;
 	@Autowired
@@ -126,7 +127,6 @@ class MoviesDailyImporterApplicationTests {
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
 
 			assertEquals(10, keywordRepository.findAllUnprocessed().size());
-			;
 		}
 
 		@Test
@@ -253,7 +253,7 @@ class MoviesDailyImporterApplicationTests {
 					.block();
 
 			assertNotNull(result);
-			assertEquals(2, result.size());;
+			assertEquals(2, result.size());
 
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(countriesUrl)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(languagesUrl)));
@@ -387,7 +387,7 @@ class MoviesDailyImporterApplicationTests {
 					.returnResult(String.class)
 					.getResponseBody()
 					.collectList()
-					.block(Duration.ofSeconds(3));
+					.block(Duration.ofSeconds(5));
 
 			assertNotNull(result);
 			System.out.println(result);

@@ -13,8 +13,11 @@ import se.david.moviesimporter.util.RestTemplateFetcher;
 
 @Service
 public class PersonImporter extends BaseImporter {
-	@Autowired
-	private PersonRepository personRepository;
+	private final PersonRepository personRepository;
+
+	public PersonImporter(PersonRepository personRepository) {
+		this.personRepository = personRepository;
+	}
 
 	public String processEntity(long personId) {
 		String url = String.format("%s/3/person/%s?api_key=%s&language=en-US&append_to_response=images,external_ids", tmdbApiUrl, personId, apiKey);

@@ -34,12 +34,15 @@ public class ConfigurationsImporter {
 	@Value("${tmdb.api.key}")
 	protected String apiKey;
 
-	@Autowired
-	private CountryRepository countryRepository;
-	@Autowired
-	private LanguageRepository languageRepository;
-	@Autowired
-	private GenreRepository genreRepository;
+	private final CountryRepository countryRepository;
+	private final LanguageRepository languageRepository;
+	private final GenreRepository genreRepository;
+
+	public ConfigurationsImporter(CountryRepository countryRepository, LanguageRepository languageRepository, GenreRepository genreRepository) {
+		this.countryRepository = countryRepository;
+		this.languageRepository = languageRepository;
+		this.genreRepository = genreRepository;
+	}
 
 	public Flux<String> importAllConfigurations() {
 		return Flux.concat(

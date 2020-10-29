@@ -96,6 +96,9 @@ public class KeywordEntity {
 
 	public void processInfo(List<MovieEntity> movies) {
 		this.processed = true;
-		this.movies.addAll(movies);
+		movies.forEach(movie -> {
+			movie.getKeywords().add(this);
+			this.movies.add(movie);
+		});
 	}
 }

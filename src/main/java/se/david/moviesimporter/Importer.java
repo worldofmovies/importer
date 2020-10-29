@@ -2,7 +2,6 @@ package se.david.moviesimporter;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,16 +18,23 @@ public class Importer {
 	@Value("${tmdb.api.key}")
 	private String apiKey;
 
-	@Autowired
-	private PersonImporter personImporter;
-	@Autowired
-	private KeywordImporter keywordImporter;
-	@Autowired
-	private MovieImporter movieImporter;
-	@Autowired
-	private CompanyImporter companyImporter;
-	@Autowired
-	private CollectionImporter collectionImporter;
+	private final PersonImporter personImporter;
+	private final KeywordImporter keywordImporter;
+	private final MovieImporter movieImporter;
+	private final CompanyImporter companyImporter;
+	private final CollectionImporter collectionImporter;
+
+	public Importer(PersonImporter personImporter,
+			KeywordImporter keywordImporter,
+			MovieImporter movieImporter,
+			CompanyImporter companyImporter,
+			CollectionImporter collectionImporter) {
+		this.personImporter = personImporter;
+		this.keywordImporter = keywordImporter;
+		this.movieImporter = movieImporter;
+		this.companyImporter = companyImporter;
+		this.collectionImporter = collectionImporter;
+	}
 
 	public List<Long> findUnprocessedMovies() {
 		return movieImporter.findAllUnprocessed();

@@ -5,9 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,30 +23,11 @@ public class PersonRepositoryTest {
 	private PersonRepository personRepository;
 
 	@Test
-	public void asd() {
-		Stream.of(Locale.getAvailableLocales()).forEach(a -> System.out.println(a.getCountry() + ":" + a.getLanguage()));
-		PersonEntity personEntity = new PersonEntity(1, false, "name", 0.0, false);
-		personRepository.saveAndFlush(personEntity);
-
-		List<PersonEntity> result = personRepository.saveAll(Arrays.asList(personEntity));
-
-		assertEquals(1, result.size());
-	}
-
-	@Test
-	public void asd2() {
-		PersonEntity personEntity = new PersonEntity(1, false, "name", 0.0, false);
-
-		List<PersonEntity> result = personRepository.saveAll(Arrays.asList(personEntity, personEntity));
-
-		assertEquals(1, personRepository.findAll().size(), personRepository.findAll().toString());
-	}
-	@Test
-	public void asd3() {
+	public void duplicatesShouldNotThrowException() {
 		PersonEntity personEntity = new PersonEntity(1, false, "name", 0.0, false);
 		personRepository.saveAndFlush(personEntity);
 		personRepository.saveAndFlush(personEntity);
-		List<PersonEntity> result = personRepository.findAllById(Arrays.asList(personEntity.getId()));
+		List<PersonEntity> result = personRepository.findAllById(Collections.singletonList(personEntity.getId()));
 
 		assertEquals(1, result.size(), result.toString());
 	}

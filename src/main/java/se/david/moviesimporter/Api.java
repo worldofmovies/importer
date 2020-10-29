@@ -14,12 +14,16 @@ import se.david.moviesimporter.importers.ConfigurationsImporter;
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class Api {
 
+	private final DailyImporter dailyImporter;
+	private final Importer importer;
+	private final ConfigurationsImporter configurationsImporter;
+
 	@Autowired
-	private DailyImporter dailyImporter;
-	@Autowired
-	private Importer importer;
-	@Autowired
-	private ConfigurationsImporter configurationsImporter;
+	public Api(DailyImporter dailyImporter, Importer importer, ConfigurationsImporter configurationsImporter) {
+		this.dailyImporter = dailyImporter;
+		this.importer = importer;
+		this.configurationsImporter = configurationsImporter;
+	}
 
 	@GetMapping(path = "/import/company/ids", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<String> dailyFileOnCompanies() {
