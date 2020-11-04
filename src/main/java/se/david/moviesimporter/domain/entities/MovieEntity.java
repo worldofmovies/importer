@@ -1,5 +1,6 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,6 +34,28 @@ public class MovieEntity {
 	private double popularity;
 	private boolean video;
 	private boolean processed;
+	private String backdropPath;
+	private Long budget;
+	private String homepage;
+	private String imdbId;
+	@Column(length = 2048)
+	private String overview;
+	private String posterPath;
+	private LocalDate releaseDate;
+	private Long revenue;
+	private Long runtime;
+	private String status;
+	private String tagline;
+	private String title;
+	private Double voteAverage;
+	private Integer voteCount;
+	//private LanguageEntity originalLanguage;
+	//private List<Title> alternativeTitles;
+	//private List<Image> images; // posters and backdrops
+	//private List<Credit> credits; // crews or cast
+	//private List<CompanyEntity> productionCompanies;
+	//private List<CountryEntity> productionCountries;
+	//private List<LanguageEntity> spokenLanguages;
 
 	@ManyToMany(targetEntity = KeywordEntity.class, mappedBy = "movies")
 	private List<KeywordEntity> keywords = new ArrayList<>();
@@ -138,19 +161,59 @@ public class MovieEntity {
 
 	@Override
 	public String toString() {
-		return "Movie{" +
+		return "MovieEntity{" +
 				"id=" + id +
 				", adult=" + adult +
 				", originalTitle='" + originalTitle + '\'' +
 				", popularity=" + popularity +
 				", video=" + video +
+				", processed=" + processed +
+				", backdropPath='" + backdropPath + '\'' +
+				", budget=" + budget +
+				", homepage='" + homepage + '\'' +
+				", imdbId='" + imdbId + '\'' +
+				", overview='" + overview + '\'' +
+				", posterPath='" + posterPath + '\'' +
+				", releaseDate=" + releaseDate +
+				", revenue=" + revenue +
+				", runtime=" + runtime +
+				", status='" + status + '\'' +
+				", tagline='" + tagline + '\'' +
+				", title='" + title + '\'' +
+				", voteAverage=" + voteAverage +
+				", voteCount=" + voteCount +
+				", keywords=" + keywords +
+				", genres=" + genres +
 				'}';
 	}
 
 	public void processInfo(Movie movie) {
 		this.originalTitle = movie.getOriginalTitle();
 		this.popularity = movie.getPopularity();
+		this.backdropPath = movie.getBackdropPath();
+		this.budget = movie.getBudget();
+		this.homepage = movie.getHomepage();
+		this.imdbId = movie.getImdbId();
+		this.overview = movie.getOverview();
+		this.posterPath = movie.getPosterPath();
+		this.releaseDate = movie.getReleaseDate();
+		this.revenue = movie.getRevenue();
+		this.runtime = movie.getRuntime();
+		this.status = movie.getStatus();
+		this.tagline = movie.getTagline();
+		this.title = movie.getTitle();
+		this.voteAverage = movie.getVoteAverage();
+		this.voteCount = movie.getVoteCount();
 		this.processed = true;
+		/*
+		 	private LanguageEntity originalLanguage;
+			private List<Title> alternativeTitles;
+			private List<Image> images; // posters and backdrops
+			private List<Credit> credits; // crews or cast
+			private List<CompanyEntity> productionCompanies;
+			private List<CountryEntity> productionCountries;
+			private List<LanguageEntity> spokenLanguages;
+		*/
 	}
 
 	public void processGenres(List<GenreEntity> genres) {
@@ -158,5 +221,17 @@ public class MovieEntity {
 			genre.getMovies().add(this);
 			this.genres.add(genre);
 		});
+	}
+
+	public void processLanguages(List<LanguageEntity> languages) {
+
+	}
+
+	public void processCountries(List<CountryEntity> countries) {
+
+	}
+
+	public void addGenres(List<GenreEntity> genres) {
+
 	}
 }

@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,18 +29,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import com.github.tomakehurst.wiremock.client.WireMock;
 
 import se.david.moviesimporter.domain.entities.CollectionEntity;
+import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.domain.entities.CountryEntity;
 import se.david.moviesimporter.domain.entities.KeywordEntity;
 import se.david.moviesimporter.domain.entities.MovieEntity;
 import se.david.moviesimporter.domain.entities.PersonEntity;
-import se.david.moviesimporter.domain.entities.CompanyEntity;
 import se.david.moviesimporter.repository.CollectionRepository;
+import se.david.moviesimporter.repository.CompanyRepository;
 import se.david.moviesimporter.repository.CountryRepository;
 import se.david.moviesimporter.repository.GenreRepository;
 import se.david.moviesimporter.repository.KeywordRepository;
 import se.david.moviesimporter.repository.MovieRepository;
 import se.david.moviesimporter.repository.PersonRepository;
-import se.david.moviesimporter.repository.CompanyRepository;
 
 @SpringBootTest(
 		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -316,9 +317,16 @@ class MoviesDailyImporterApplicationTests {
 			String url2 = "/3/discover/movie\\?api_key=API_KEY&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=2&with_keywords=378";
 			stubEndpointForJson(resource2, url2);
 
-			webClient.get().uri("/import/keyword/unprocessed")
+			List<String> result = webClient.get().uri("/import/keyword/unprocessed")
 					.exchange()
-					.expectStatus().is2xxSuccessful();
+					.expectStatus().is2xxSuccessful()
+					.returnResult(String.class)
+					.getResponseBody()
+					.collectList()
+					.block(Duration.ofSeconds(5));
+
+			assertNotNull(result, "Result must not be null");
+			assertTrue(result.size() >= 1, result.toString());
 
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(url)));
 			verify(WireMock.getRequestedFor(WireMock.urlMatching(url2)));
