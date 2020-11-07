@@ -1,5 +1,6 @@
 package se.david.moviesimporter.domain.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +27,9 @@ public class CountryEntity {
 			joinColumns = { @JoinColumn(name = "fk_country") },
 			inverseJoinColumns = { @JoinColumn(name = "fk_language") })
 	private List<LanguageEntity> languages;
+
+	@ManyToMany(targetEntity = MovieEntity.class, mappedBy = "productionCountries")
+	private List<MovieEntity> movies = new ArrayList<>();
 
 	public CountryEntity() {
 	}
@@ -58,6 +62,14 @@ public class CountryEntity {
 
 	public void setLanguages(List<LanguageEntity> languages) {
 		this.languages = languages;
+	}
+
+	public List<MovieEntity> getMovies() {
+		return movies;
+	}
+
+	public void setMovies(List<MovieEntity> movies) {
+		this.movies = movies;
 	}
 
 	@Override

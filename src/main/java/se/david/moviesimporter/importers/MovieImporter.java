@@ -3,6 +3,7 @@ package se.david.moviesimporter.importers;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -76,9 +77,9 @@ public class MovieImporter extends BaseImporter {
 		return result -> movieRepository.findById(movieId)
 				.ifPresent(movie -> {
 					movie.processInfo(result);
-					movie.processLanguages(languageEntities(result));
+					movie.processLanguages(languageEntities(result),languagesCache.get(result.getOriginalLanguage()));
 					movie.processCountries(countryEntities(result));
-					movie.addGenres(genres(result));
+					movie.processGenres(genres(result));
 					movieRepository.saveAndFlush(movie);
 				});
 	}
@@ -87,6 +88,7 @@ public class MovieImporter extends BaseImporter {
 		return movieData.getSpokenLanguages().stream()
 				.map(SpokenLanguage::getIso_639_1)
 				.map(languagesCache::get)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 
@@ -94,6 +96,7 @@ public class MovieImporter extends BaseImporter {
 		return movieData.getProductionCountries().stream()
 				.map(ProductionCountry::getIso_3166_1)
 				.map(countriesCache::get)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 
@@ -101,6 +104,7 @@ public class MovieImporter extends BaseImporter {
 		return movieData.getGenres().stream()
 				.map(Genre::getId)
 				.map(genresCache::get)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
 }

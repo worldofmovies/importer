@@ -8,7 +8,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import se.david.moviesimporter.domain.tmdb.Movie;
 
 @Entity(name = "Language")
 @Table(name = "language")
@@ -19,6 +22,12 @@ public class LanguageEntity {
 	@Column(name = "english_name", nullable = false)
 	private String englishName;
 	private String name;
+
+	//@OneToOne(mappedBy = "originalLanguage")
+	//private MovieEntity movie;
+
+	@ManyToMany(targetEntity = MovieEntity.class, mappedBy = "spokenLanguages")
+	private List<MovieEntity> movies = new ArrayList<>();
 
 	@ManyToMany(targetEntity = CountryEntity.class, mappedBy = "languages")
 	private List<CountryEntity> countries = new ArrayList<>();
@@ -63,6 +72,15 @@ public class LanguageEntity {
 
 	public void setCountries(List<CountryEntity> countries) {
 		this.countries = countries;
+	}
+
+
+	public List<MovieEntity> getMovies() {
+		return movies;
+	}
+
+	public void setMovies(List<MovieEntity> movies) {
+		this.movies = movies;
 	}
 
 	@Override
